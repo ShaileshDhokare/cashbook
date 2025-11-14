@@ -1,13 +1,10 @@
-import { Header } from '@/components/content/Header';
 import { HeroSection } from '@/components/content/HeroSection';
 import { FeatureCard } from '@/components/content/FeatureCard';
 import { BookOpen, PieChart, ClipboardList } from 'lucide-react';
-import Footer from '@/components/content/Footer';
 
 export default function Home() {
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <Header displayLogin />
+    <div className='bg-gray-50 pb-10'>
       <div className='mt-16'>
         <HeroSection />
 
@@ -34,7 +31,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-      <Footer />
     </div>
   );
 }

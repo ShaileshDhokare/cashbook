@@ -1,4 +1,3 @@
-import { Header } from '@/components/content/Header';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +12,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import Footer from '@/components/content/Footer';
 
 const registerSchema = z
   .object({
@@ -71,7 +69,6 @@ export default function Register() {
 
   return (
     <div className='min-h-screen'>
-      <Header />
       <div className='flex mt-5 flex-col items-center justify-center min-h-screen bg-gray-50 px-4'>
         <Card className='w-full md:w-[350px] lg:w-[450px]'>
           <CardHeader className='text-center'>
@@ -192,7 +189,6 @@ export default function Register() {
           </form>
         </Card>
       </div>
-      <Footer />
     </div>
   );
 }

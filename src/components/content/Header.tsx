@@ -6,7 +6,7 @@ type HeaderProps = {
   displayLogin?: boolean;
 };
 
-export function Header({ displayLogin = false }: HeaderProps) {
+export default function Header({ displayLogin = false }: HeaderProps) {
   return (
     <header className='fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-6 py-4 shadow-md bg-gray-100 border-b border-gray-200'>
       <div className='flex'>

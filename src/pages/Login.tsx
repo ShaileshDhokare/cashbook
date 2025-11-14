@@ -1,4 +1,3 @@
-import { Header } from '@/components/content/Header';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
-import Footer from '@/components/content/Footer';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -48,7 +46,6 @@ export default function Login() {
 
   return (
     <div className='min-h-screen'>
-      <Header />
       <div className='flex mt-5 flex-col items-center justify-center min-h-screen bg-gray-50 px-4'>
         <Card className='w-full md:w-[350px] lg:w-[450px]'>
           <CardHeader className='text-center'>
@@ -106,7 +103,6 @@ export default function Login() {
           </div>
         </Card>
       </div>
-      <Footer />
     </div>
   );
 }

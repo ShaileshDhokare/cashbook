@@ -15,6 +15,7 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import Books from '@/components/content/Books';
+import TopExpenses from '@/components/content/TopExpenses';
 
 export const description = 'A pie chart with a legend';
 const chartData = [
@@ -53,10 +54,9 @@ const chartConfig = {
 const Dashboard = () => {
   return (
     <div>
-      <Header />
       <div className='header-margin mb-5'>
         {/* Container + responsive 2-col layout (single col on mobile) */}
-        <div className='container mx-auto px-4 mt-6'>
+        <div className='container mx-auto mt-6'>
           {/* Analytics Charts */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6 m-4'>
             {/* Card / Column 1 */}
@@ -143,10 +143,10 @@ const Dashboard = () => {
           </div>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6 m-4'>
             <Books />
+            <TopExpenses />
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
