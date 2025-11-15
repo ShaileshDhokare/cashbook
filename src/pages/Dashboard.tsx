@@ -1,5 +1,3 @@
-import Footer from '@/components/content/Footer';
-import { Header } from '@/components/content/Header';
 import { ResponsiveContainer, Pie, PieChart, Tooltip, Label } from 'recharts';
 import {
   Card,

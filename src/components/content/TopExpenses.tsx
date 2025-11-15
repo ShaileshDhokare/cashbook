@@ -2,7 +2,7 @@ import type { ExpenseShow } from '@/utils/types';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import Expense from './Expense';
 
-const sampleExpenses: ExpenseShow[] = [
+export const sampleExpenses: ExpenseShow[] = [
   {
     id: 1,
     category: 'Groceries',
@@ -108,7 +108,7 @@ const TopExpenses = () => {
               key={expense.id}
               expense={expense}
               showActions={false}
-              displayDate='created_at'
+              displayDate='date'
             />
           ))}
         </div>
