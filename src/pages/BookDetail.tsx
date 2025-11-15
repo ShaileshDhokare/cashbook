@@ -290,8 +290,8 @@ const BookDetail = () => {
                 </InputGroup>
                 <Button className='rounded-xs'>Add New Expense</Button>
               </div>
-              <div className='grid grid-cols-7 border rounded-sm p-3 mb-4'>
-                <div className='col-span-3 flex gap-3 items-center justify-center'>
+              <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
+                <div className='col-span-4 flex gap-2 items-center justify-center'>
                   <div className='flex flex-col align-top h-full'>
                     <span className='p-2 mt-1 rounded-full border bg-indigo-100 text-indigo-900'>
                       <Sigma className='w-[25px] h-[25px]' />
@@ -301,7 +301,7 @@ const BookDetail = () => {
                     <span className='font-medium text-base'>
                       Selected Period
                     </span>
-                    <h1 className='text-4xl font-medium'>
+                    <h1 className='text-2xl md:text-4xl font-medium'>
                       {getRupeeSymbol()}50000
                     </h1>
                   </div>
@@ -309,7 +309,7 @@ const BookDetail = () => {
                 <div className='col-span-1 flex justify-center'>
                   <Separator orientation='vertical' />
                 </div>
-                <div className='col-span-3 flex gap-3 items-center justify-center'>
+                <div className='col-span-4 flex gap-2 items-center justify-center'>
                   <div className='flex flex-col align-top h-full'>
                     <span className='p-2 mt-1 rounded-full border bg-green-100 text-green-900'>
                       <Equal className='w-[25px] h-[25px]' />
@@ -317,7 +317,7 @@ const BookDetail = () => {
                   </div>
                   <div className='flex flex-col'>
                     <span className='font-medium text-base'>All Time</span>
-                    <h1 className='text-4xl font-medium'>
+                    <h1 className='text-2xl md:text-4xl font-medium'>
                       {getRupeeSymbol()}100000
                     </h1>
                   </div>

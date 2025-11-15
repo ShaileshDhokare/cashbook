@@ -81,7 +81,7 @@ const Books = () => {
                   </Button>
                 </div>
                 <ItemDescription>{book.desc}</ItemDescription>
-                <div className='w-full mt-4 flex flex-row justify-between items-center'>
+                <div className='w-full mt-4 flex flex-row gap-4 justify-between items-center'>
                   <h1 className='text-2xl font-bold'>
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.amount)}

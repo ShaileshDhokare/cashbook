@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { SquarePen, Trash2 } from 'lucide-react';
-import { Item, ItemActions, ItemContent } from '@/components/ui/item';
+import { Item, ItemContent } from '@/components/ui/item';
 import {
   getFormattedDate,
   getFormattedTime,
@@ -45,11 +45,37 @@ const Expense = ({
 
   return (
     <Item variant='outline' className='p-2'>
-      <ItemContent className='mx-4 flex flex-col gap-2'>
-        <div className='text-base font-medium'>
-          <span>{remark}</span>
+      <ItemContent className='flex flex-col gap-3'>
+        <div className='flex items-center justify-between'>
+          <div className='text-base font-medium'>
+            <span>{remark}</span>
+          </div>
+          <div className='flex items-center gap-1'>
+            <span className='text-lg font-medium mr-4'>
+              {getRupeeSymbol()}
+              {amount}
+            </span>
+            {showActions && (
+              <>
+                <Button
+                  variant='ghost'
+                  className='text-zinc-500 hover:text-zinc-700'
+                  size='icon'
+                >
+                  <SquarePen />
+                </Button>
+                <Button
+                  variant='ghost'
+                  className='text-rose-400 hover:text-rose-600'
+                  size='icon'
+                >
+                  <Trash2 />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
-        <div className='flex gap-3 w-full'>
+        <div className='flex gap-2 w-full'>
           <span className='px-1 text-sm border rounded-sm bg-purple-100 text-purple-800'>
             {category}
           </span>
@@ -59,31 +85,6 @@ const Expense = ({
           {getExpenseDate(displayDate)}
         </div>
       </ItemContent>
-
-      <ItemActions>
-        <span className='text-lg font-medium mr-4'>
-          {getRupeeSymbol()}
-          {amount}
-        </span>
-        {showActions && (
-          <>
-            <Button
-              variant='ghost'
-              className='text-zinc-500 hover:text-zinc-700'
-              size='icon'
-            >
-              <SquarePen />
-            </Button>
-            <Button
-              variant='ghost'
-              className='text-rose-400 hover:text-rose-600'
-              size='icon'
-            >
-              <Trash2 />
-            </Button>
-          </>
-        )}
-      </ItemActions>
     </Item>
   );
 };
