@@ -17,3 +17,29 @@ export type ExpenseShow = Omit<
   category: string;
   payment_mode: string;
 };
+
+export type BookEntry = {
+  id: number;
+  user_id?: number;
+  name: string;
+  description: string;
+  is_active: boolean;
+  created_at?: string;
+};
+
+export type PaymentMode = {
+  id: number;
+  user_id?: number;
+  name: string;
+  is_active?: boolean;
+  created_at?: string;
+};
+
+export type Category = {
+  id: number;
+  user_id?: number;
+  book_id?: number;
+  name: string;
+  is_active?: boolean;
+  created_at?: string;
+};

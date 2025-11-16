@@ -1,30 +1,17 @@
 import { Button } from '@/components/ui/button';
 import {
-  Search,
+  CalendarDays,
   Check,
   ChevronsUpDown,
-  X,
-  ChevronDownIcon,
-  CalendarDays,
-  Sigma,
   Equal,
+  Search,
+  Sigma,
+  X,
 } from 'lucide-react';
 
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from '@/components/ui/input-group';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import BookExpenses from '@/components/content/BookExpenses';
+import ExpenseForm from '@/components/content/ExpenseForm';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Command,
   CommandEmpty,
@@ -34,30 +21,51 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/components/ui/input-group';
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import { getRupeeSymbol } from '@/utils/commonUtils';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import BookExpenses from '@/components/content/BookExpenses';
+import { cn } from '@/lib/utils';
+import { getRupeeSymbol } from '@/utils/commonUtils';
+import { useState } from 'react';
 
 const expenseCategories = [
-  { value: 'rent', label: 'Rent' },
-  { value: 'groceries', label: 'Groceries' },
-  { value: 'utilities', label: 'Utilities' },
-  { value: 'transport', label: 'Transport' },
-  { value: 'entertainment', label: 'Entertainment' },
-  { value: 'healthcare', label: 'Healthcare' },
-  { value: 'education', label: 'Education' },
-  { value: 'subscriptions', label: 'Subscriptions' },
-  { value: 'dining_out', label: 'Dining Out' },
-  { value: 'clothing', label: 'Clothing' },
-  { value: 'miscellaneous', label: 'Miscellaneous' },
+  { id: 1, name: 'Rent' },
+  { id: 2, name: 'Groceries' },
+  { id: 3, name: 'Utilities' },
+  { id: 4, name: 'Transport' },
+  { id: 5, name: 'Entertainment' },
+  { id: 6, name: 'Healthcare' },
+  { id: 7, name: 'Education' },
+  { id: 8, name: 'Subscriptions' },
+  { id: 9, name: 'Dining Out' },
+  { id: 10, name: 'Clothing' },
+  { id: 11, name: 'Miscellaneous' },
 ];
+
+const paymentModes = [
+  { id: 1, name: 'Credit Card' },
+  { id: 2, name: 'Debit Card' },
+  { id: 3, name: 'Cash' },
+  { id: 4, name: 'UPI' },
+];
+
 const BookDetail = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
@@ -70,7 +78,7 @@ const BookDetail = () => {
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto h-min-screen'>
-        <div className='my-4 bg-blue-100 text-blue-800 rounded-sm p-2 text-center'>
+        <div className='my-4 bg-blue-100 text-blue-800 rounded-xs p-2 text-center'>
           <h1 className='text-2xl font-semibold mb-1'>Book Detail Page</h1>
           <span className='text-sm'>
             A book to track monthly expenses at home like rent, groceries, and
@@ -211,8 +219,8 @@ const BookDetail = () => {
                       >
                         {value
                           ? expenseCategories.find(
-                              (category) => category.value === value
-                            )?.label
+                              (category) => category.id.toString() === value
+                            )?.name
                           : 'Select Category'}
                         <ChevronsUpDown className='opacity-50' />
                       </Button>
@@ -228,8 +236,8 @@ const BookDetail = () => {
                           <CommandGroup>
                             {expenseCategories.map((category) => (
                               <CommandItem
-                                key={category.value}
-                                value={category.value}
+                                key={category.id}
+                                value={category.id.toString()}
                                 onSelect={(currentValue) => {
                                   setValue(
                                     currentValue === value ? '' : currentValue
@@ -237,11 +245,11 @@ const BookDetail = () => {
                                   setOpen(false);
                                 }}
                               >
-                                {category.label}
+                                {category.name}
                                 <Check
                                   className={cn(
                                     'ml-auto',
-                                    value === category.value
+                                    value === category.id.toString()
                                       ? 'opacity-100'
                                       : 'opacity-0'
                                   )}
@@ -256,17 +264,18 @@ const BookDetail = () => {
                 </div>
                 <div className='flex gap-0 items-center bg-indigo-100 text-indigo-800 px-2 rounded-xs'>
                   <span className='text-base font-medium'>Payment Mode:</span>
-                  <Select defaultValue='upi'>
+                  <Select>
                     <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
-                      <SelectValue />
+                      <SelectValue placeholder='Select Mode' />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Payment Mode</SelectLabel>
-                        <SelectItem value='credit_card'>Credit Card</SelectItem>
-                        <SelectItem value='debit_card'>Debit Card</SelectItem>
-                        <SelectItem value='cash'>Cash</SelectItem>
-                        <SelectItem value='upi'>UPI</SelectItem>
+                        {paymentModes.map((mode) => (
+                          <SelectItem key={mode.id} value={mode.id.toString()}>
+                            {mode.name}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -288,7 +297,11 @@ const BookDetail = () => {
                     </InputGroupButton>
                   </InputGroupAddon>
                 </InputGroup>
-                <Button className='rounded-xs'>Add New Expense</Button>
+                {/* <Button className='rounded-xs'>Add New Expense</Button> */}
+                <ExpenseForm
+                  categories={expenseCategories}
+                  paymentModes={paymentModes}
+                />
               </div>
               <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
                 <div className='col-span-4 flex gap-2 items-center justify-center'>

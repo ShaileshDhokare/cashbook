@@ -32,22 +32,34 @@ export default function Header({ displayLogin = true }: HeaderProps) {
             <NavigationMenu>
               <NavigationMenuList className='flex-wrap'>
                 <NavigationMenuItem className=''>
-                  <NavigationMenuLink asChild className='font-medium text-base'>
+                  <NavigationMenuLink
+                    asChild
+                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                  >
                     <Link to='/'>Home</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem className=''>
-                  <NavigationMenuLink asChild className='font-medium text-base'>
+                  <NavigationMenuLink
+                    asChild
+                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                  >
                     <Link to='/dashboard'>Dashboard</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem className=''>
-                  <NavigationMenuLink asChild className='font-medium text-base'>
+                  <NavigationMenuLink
+                    asChild
+                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                  >
                     <Link to='/books'>Books</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem className=''>
-                  <NavigationMenuLink asChild className='font-medium text-base'>
+                  <NavigationMenuLink
+                    asChild
+                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                  >
                     <Link to='/payment-modes'>Payment Modes</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -57,12 +69,18 @@ export default function Header({ displayLogin = true }: HeaderProps) {
         </div>
         <div className='col-span-1'>
           {displayLogin && (
-            <div className='flex w-full md:justify-end gap-3'>
-              <Link to='/login'>
-                <Button variant='default'>Login</Button>
+            <div className='flex w-full h-full md:justify-end gap-3 items-center'>
+              <Link
+                to='/login'
+                className='text-base font-medium text-neutral-500 hover:text-neutral-800'
+              >
+                Login
               </Link>
-              <Link to='/register'>
-                <Button variant='outline'>Register</Button>
+              <Link
+                to='/register'
+                className='text-base font-medium text-neutral-500 hover:text-neutral-800'
+              >
+                Register
               </Link>
             </div>
           )}

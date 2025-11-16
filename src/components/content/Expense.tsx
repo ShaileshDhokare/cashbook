@@ -59,14 +59,14 @@ const Expense = ({
               <>
                 <Button
                   variant='ghost'
-                  className='text-zinc-500 hover:text-zinc-700'
+                  className='text-zinc-400 hover:text-zinc-800'
                   size='icon'
                 >
                   <SquarePen />
                 </Button>
                 <Button
                   variant='ghost'
-                  className='text-rose-400 hover:text-rose-600'
+                  className='text-red-400 hover:text-red-800'
                   size='icon'
                 >
                   <Trash2 />
