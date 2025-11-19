@@ -13,6 +13,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
+import { Spinner } from '@/components/ui/spinner';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+import { useUserLogin } from '@/services/authServices';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -27,9 +31,15 @@ const loginSchema = z.object({
     ),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const setSession = useAuthStore((state: any) => state.setSession);
+  const setError = useAuthStore((state: any) => state.setError);
+  const { mutate: login, isPending, isError, error } = useUserLogin();
+
   const {
     register,
     handleSubmit,
@@ -41,7 +51,17 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log('form data -->', data);
+    login(data, {
+      onSuccess: (data) => {
+        console.log('Logged in!', data);
+        setSession(data?.session);
+        navigate('/dashboard');
+      },
+      onError: (error) => {
+        setError(error);
+      },
+    });
+    return;
   };
 
   return (
@@ -57,11 +77,11 @@ export default function Login() {
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <CardContent className='space-y-4'>
               <div className='space-y-2'>
-                <Label htmlFor='email'>Email/Username</Label>
+                <Label htmlFor='email'>Email</Label>
                 <Input
                   id='email'
                   type='email'
-                  placeholder='Enter your email OR username'
+                  placeholder='Enter your email'
                   {...register('email')}
                   aria-invalid={errors.email ? 'true' : 'false'}
                 />
@@ -91,7 +111,14 @@ export default function Login() {
                 className='w-full bg-blue-600 hover:bg-blue-700'
                 disabled={!isValid}
               >
-                Login
+                {isPending ? (
+                  <>
+                    <Spinner />
+                    Logging in...
+                  </>
+                ) : (
+                  'Login'
+                )}
               </Button>
             </CardFooter>
           </form>

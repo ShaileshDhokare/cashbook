@@ -12,6 +12,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useAuthStore } from '@/store/authStore';
+import { useUserRegister } from '@/services/authServices';
+import { useNavigate } from 'react-router-dom';
+import { Spinner } from '@/components/ui/spinner';
 
 const registerSchema = z
   .object({
@@ -50,9 +54,11 @@ const registerSchema = z
     message: 'Passwords do not match',
   });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -63,8 +69,23 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
   });
 
+  const setSession = useAuthStore((state: any) => state.setSession);
+  const setError = useAuthStore((state: any) => state.setError);
+
+  const { mutate: userRegister, isPending, isError, error } = useUserRegister();
+
   const onSubmit = async (data: RegisterFormData) => {
-    console.log('form data -->', data);
+    userRegister(data, {
+      onSuccess: (data) => {
+        console.log('Logged in!', data);
+        setSession(data?.session);
+        navigate('/');
+      },
+      onError: (error) => {
+        setError(error);
+      },
+    });
+    return;
   };
 
   return (
@@ -183,7 +204,14 @@ export default function Register() {
                 className='w-full bg-blue-600 hover:bg-blue-700'
                 disabled={!isValid}
               >
-                Register
+                {isPending ? (
+                  <>
+                    <Spinner />
+                    Registering...
+                  </>
+                ) : (
+                  'Register'
+                )}
               </Button>
             </CardFooter>
           </form>

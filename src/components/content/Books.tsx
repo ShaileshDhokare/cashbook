@@ -103,7 +103,9 @@ const Books = () => {
         </div>
       </CardContent>
       <CardFooter className='flex justify-center'>
-        <Button>Manage Books</Button>
+        <Link to='/books'>
+          <Button>Manage Books</Button>
+        </Link>
       </CardFooter>
     </Card>
   );
