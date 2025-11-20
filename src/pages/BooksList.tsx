@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { SquarePen, Trash2 } from 'lucide-react';
-import type { BookEntry } from '../utils/types';
+import type { Book } from '../utils/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
 
-const booksData: BookEntry[] = [
+const booksData: Omit<Book, 'user_id'>[] = [
   {
     id: 1,
     name: 'Personal Finance',
@@ -36,62 +36,6 @@ const booksData: BookEntry[] = [
     description: 'Plan monthly budgets and set financial goals',
     is_active: true,
     created_at: '2023-11-12',
-  },
-  {
-    id: 3,
-    name: 'Investment Guide',
-    description: 'Basics of investing and portfolio tracking',
-    is_active: false,
-    created_at: '2022-08-20',
-  },
-  {
-    id: 4,
-    name: 'Small Business Ledger',
-    description: 'Record income and expenses for small businesses',
-    is_active: true,
-    created_at: '2024-01-05',
-  },
-  {
-    id: 5,
-    name: 'Savings Tracker',
-    description: 'Monitor savings goals and progress',
-    is_active: true,
-    created_at: '2023-06-30',
-  },
-  {
-    id: 6,
-    name: 'Retirement Planner',
-    description: 'Estimate retirement needs and plan contributions',
-    is_active: false,
-    created_at: '2021-12-15',
-  },
-  {
-    id: 7,
-    name: 'Expense Analyzer',
-    description: 'Categorize and analyze spending habits',
-    is_active: true,
-    created_at: '2024-03-22',
-  },
-  {
-    id: 8,
-    name: 'Tax Organizer',
-    description: 'Organize deductions and prepare for tax season',
-    is_active: false,
-    created_at: '2022-04-10',
-  },
-  {
-    id: 9,
-    name: 'Invoice Manager',
-    description: 'Create and track invoices and payments',
-    is_active: true,
-    created_at: '2023-09-01',
-  },
-  {
-    id: 10,
-    name: 'Fundamentals of Accounting',
-    description: 'Core accounting principles for bookkeeping',
-    is_active: true,
-    created_at: '2020-07-19',
   },
 ];
 

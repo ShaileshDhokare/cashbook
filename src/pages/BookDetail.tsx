@@ -60,10 +60,41 @@ const expenseCategories = [
 ];
 
 const paymentModes = [
-  { id: 1, name: 'Credit Card' },
-  { id: 2, name: 'Debit Card' },
-  { id: 3, name: 'Cash' },
-  { id: 4, name: 'UPI' },
+  {
+    id: 1,
+    user_id: 1,
+    name: 'Cash',
+    is_active: true,
+    created_at: '2023-10-01',
+  },
+  {
+    id: 2,
+    user_id: 1,
+    name: 'Credit Card',
+    is_active: true,
+    created_at: '2023-10-05',
+  },
+  {
+    id: 3,
+    user_id: 1,
+    name: 'Debit Card',
+    is_active: true,
+    created_at: '2023-10-07',
+  },
+  {
+    id: 4,
+    user_id: 1,
+    name: 'Bank Transfer',
+    is_active: false,
+    created_at: '2023-10-10',
+  },
+  {
+    id: 5,
+    user_id: 1,
+    name: 'Mobile Wallet',
+    is_active: true,
+    created_at: '2023-10-12',
+  },
 ];
 
 const BookDetail = () => {

@@ -1,4 +1,4 @@
-export type ExpenseEntry = {
+export type Expense = {
   id: number;
   user_id: number;
   book_id: number;
@@ -11,16 +11,16 @@ export type ExpenseEntry = {
 };
 
 export type ExpenseShow = Omit<
-  ExpenseEntry,
+  Expense,
   'user_id' | 'book_id' | 'category_id' | 'payment_mode_id'
 > & {
   category: string;
   payment_mode: string;
 };
 
-export type BookEntry = {
+export type Book = {
   id: number;
-  user_id?: number;
+  user_id: number;
   name: string;
   description: string;
   is_active: boolean;
@@ -29,9 +29,9 @@ export type BookEntry = {
 
 export type PaymentMode = {
   id: number;
-  user_id?: number;
+  user_id: number;
   name: string;
-  is_active?: boolean;
+  is_active: boolean;
   created_at?: string;
 };
 
