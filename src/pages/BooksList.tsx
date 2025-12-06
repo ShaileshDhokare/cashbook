@@ -7,7 +7,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { SquarePen, Trash2 } from 'lucide-react';
-import type { Book } from '../utils/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,30 +20,75 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useAddBook, useBooks } from '@/services/bookServices';
+import { useAuthStore } from '@/store/authStore';
+import { Spinner } from '@/components/ui/spinner';
+import { useEffect, useState } from 'react';
+import Loader from '@/components/content/Loader';
 
-const booksData: Omit<Book, 'user_id'>[] = [
-  {
-    id: 1,
-    name: 'Personal Finance',
-    description: 'Track your personal expenses',
-    is_active: true,
-    created_at: '2023-10-01',
-  },
-  {
-    id: 2,
-    name: 'Budget Planner',
-    description: 'Plan monthly budgets and set financial goals',
-    is_active: true,
-    created_at: '2023-11-12',
-  },
-];
+const BookSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: 'Name must be at least 3 characters long.' })
+    .max(50, { message: 'Name cannot exceed 50 characters.' }),
+  description: z
+    .string()
+    .min(10, { message: 'Description must be at least 3 characters long.' })
+    .max(200, { message: 'Description cannot exceed 200 characters.' }),
+});
+
+export type NewBookFormData = z.infer<typeof BookSchema>;
 
 const BooksList = () => {
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  const { data: books, isLoading, isError: booksError } = useBooks(userId);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<NewBookFormData>({
+    resolver: zodResolver(BookSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+    },
+  });
+  const {
+    mutate,
+    isPending,
+    error,
+    isError,
+    isSuccess,
+    data: newBookData,
+  } = useAddBook();
+
+  const onSubmit = (data: NewBookFormData) => {
+    mutate({
+      ...data,
+      user_id: userId,
+      is_active: true,
+    });
+  };
+
+  useEffect(() => {
+    if (!isError && isSuccess && newBookData) {
+      setOpenModal(false);
+    }
+  }, [newBookData, isSuccess, isError]);
+
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto'>
         <div className='flex justify-end p-3'>
-          <Dialog>
+          <Dialog open={openModal} onOpenChange={setOpenModal}>
             <form>
               <DialogTrigger asChild>
                 <Button className='rounded-xs'>Add New Book</Button>
@@ -53,28 +97,56 @@ const BooksList = () => {
                 <DialogHeader>
                   <DialogTitle>Add New Book</DialogTitle>
                 </DialogHeader>
-                <div className='grid gap-3'>
-                  <div className='grid gap-2'>
-                    <Label htmlFor='name'>Name</Label>
-                    <Input id='name' name='name' />
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className='flex flex-col gap-4'
+                >
+                  <div className='grid gap-3'>
+                    <div className='grid gap-2'>
+                      <Label htmlFor='name'>Name</Label>
+                      <Input type='text' id='name' {...register('name')} />
+                      {errors.name && (
+                        <p className='text-sm text-red-500'>
+                          {errors.name.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className='grid gap-3'>
-                  <div className='grid gap-2'>
-                    <Label htmlFor='description'>Description</Label>
-                    <Input id='description' name='description' />
+                  <div className='grid gap-3'>
+                    <div className='grid gap-2'>
+                      <Label htmlFor='description'>Description</Label>
+                      <Input
+                        type='text'
+                        id='description'
+                        {...register('description')}
+                      />
+                      {errors.description && (
+                        <p className='text-sm text-red-500'>
+                          {errors.description.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant='outline' size='sm' className='rounded-xs'>
-                      Cancel
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        className='rounded-xs'
+                      >
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      type='submit'
+                      size='sm'
+                      className='rounded-xs'
+                      disabled={isPending || !isValid}
+                    >
+                      {isPending && <Spinner />} Add
                     </Button>
-                  </DialogClose>
-                  <Button type='submit' size='sm' className='rounded-xs'>
-                    Add
-                  </Button>
-                </DialogFooter>
+                  </DialogFooter>
+                </form>
               </DialogContent>
             </form>
           </Dialog>
@@ -100,7 +172,7 @@ const BooksList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {booksData.map((book) => (
+            {books?.map((book) => (
               <TableRow key={book.id}>
                 <TableCell className='px-4 py-2 font-medium border border-gray-200'>
                   {book.id}
@@ -140,6 +212,13 @@ const BooksList = () => {
                 </TableCell>
               </TableRow>
             ))}
+            {isLoading && (
+              <TableRow className='hover:bg-transparent'>
+                <TableCell colSpan={5}>
+                  <Loader show={true} />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

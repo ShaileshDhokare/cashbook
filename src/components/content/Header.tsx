@@ -43,30 +43,34 @@ export default function Header({ logoutUser }: HeaderProps) {
                     <Link to='/'>Home</Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
-                <NavigationMenuItem className=''>
-                  <NavigationMenuLink
-                    asChild
-                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
-                  >
-                    <Link to='/dashboard'>Dashboard</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem className=''>
-                  <NavigationMenuLink
-                    asChild
-                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
-                  >
-                    <Link to='/books'>Books</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem className=''>
-                  <NavigationMenuLink
-                    asChild
-                    className='font-medium text-base text-neutral-500 hover:text-neutral-800'
-                  >
-                    <Link to='/payment-modes'>Payment Modes</Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                {userProfile && (
+                  <>
+                    <NavigationMenuItem className=''>
+                      <NavigationMenuLink
+                        asChild
+                        className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                      >
+                        <Link to='/dashboard'>Dashboard</Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className=''>
+                      <NavigationMenuLink
+                        asChild
+                        className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                      >
+                        <Link to='/books'>Books</Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className=''>
+                      <NavigationMenuLink
+                        asChild
+                        className='font-medium text-base text-neutral-500 hover:text-neutral-800'
+                      >
+                        <Link to='/payment-modes'>Payment Modes</Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  </>
+                )}
               </NavigationMenuList>
             </NavigationMenu>
           </div>

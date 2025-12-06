@@ -1,17 +1,10 @@
 import { Button } from '@/components/ui/button';
-import {
-  CalendarDays,
-  Check,
-  ChevronsUpDown,
-  Equal,
-  Search,
-  Sigma,
-  X,
-} from 'lucide-react';
+import { Check, ChevronsUpDown, Equal, Sigma, X } from 'lucide-react';
 
 import BookExpenses from '@/components/content/BookExpenses';
+import DurationSelector from '@/components/content/DurationSelector';
 import ExpenseForm from '@/components/content/ExpenseForm';
-import { Calendar } from '@/components/ui/calendar';
+import Loader from '@/components/content/Loader';
 import {
   Command,
   CommandEmpty,
@@ -23,7 +16,6 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
 import {
@@ -42,8 +34,24 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { getRupeeSymbol } from '@/utils/commonUtils';
+import { useBooks } from '@/services/bookServices';
+import {
+  useExpensesByBook,
+  useTotalOfExpenses,
+} from '@/services/expenseServices';
+import { useAuthStore } from '@/store/authStore';
+import {
+  getAllTimeDateRange,
+  getCurrentMonthDateRange,
+  getCurrentYearDateRange,
+  getCustomDateRange,
+  getLastMonthDateRange,
+  getRupeeSymbol,
+} from '@/utils/commonUtils';
+import type { DateRange } from '@/utils/types';
+import useDebounce from '@/utils/useDebounce';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const expenseCategories = [
   { id: 1, name: 'Rent' },
@@ -101,140 +109,98 @@ const BookDetail = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('this_month');
-  const [fromDateOpen, setFromDateOpen] = useState(false);
-  const [fromDate, setFromDate] = useState<Date | undefined>(undefined);
-  const [toDateOpen, setToDateOpen] = useState(false);
-  const [toDate, setToDate] = useState<Date | undefined>(undefined);
+  const [customDuration, setCustomDuration] = useState<{
+    startDate: Date | undefined;
+    endDate: Date | undefined;
+  }>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [amountQuery, setAmountQuery] = useState<{
+    condition: 'gte' | 'lte';
+    amount: number;
+  }>({
+    condition: 'gte',
+    amount: 0,
+  });
+
+  const { bookId } = useParams();
+
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+
+  const getExpensesByDuration = () => {
+    switch (selectedDuration) {
+      case 'this_month':
+        return getCurrentMonthDateRange();
+      case 'last_month':
+        return getLastMonthDateRange();
+      case 'this_year':
+        return getCurrentYearDateRange();
+      case 'all_time':
+        return getAllTimeDateRange();
+      case 'custom_range':
+        return getCustomDateRange(
+          customDuration?.startDate!,
+          customDuration?.endDate!
+        );
+    }
+  };
+
+  const { startDate, endDate } = getExpensesByDuration() as DateRange;
+  const filters = {
+    startDate,
+    endDate,
+    categoryIds: [],
+    paymentModeIds: [],
+    searchQuery: useDebounce(searchQuery, 1500),
+    amountQuery: {
+      condition: amountQuery.condition,
+      amount: useDebounce(amountQuery.amount, 1500),
+    },
+  };
+
+  const { data: books } = useBooks(userId);
+  const currentBook = books?.find((book: any) => book.id === Number(bookId));
+
+  const {
+    data: BookExpenseData,
+    isLoading: BookExpensesLoading,
+    error: BookExpensesError,
+  } = useExpensesByBook(Number(bookId), userId, filters);
+
+  const {
+    data: totalExpensesOfAllTime,
+    isLoading: totalExpensesOfAllTimeLoading,
+  } = useTotalOfExpenses(Number(bookId), userId);
+
+  const {
+    data: totalExpensesOfDuration,
+    isLoading: totalExpensesOfDurationLoading,
+  } = useTotalOfExpenses(Number(bookId), userId, filters);
 
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto h-min-screen'>
         <div className='my-4 bg-blue-100 text-blue-800 rounded-xs p-2 text-center'>
-          <h1 className='text-2xl font-semibold mb-1'>Book Detail Page</h1>
-          <span className='text-sm'>
-            A book to track monthly expenses at home like rent, groceries, and
-            utilities.
-          </span>
+          <h1 className='text-2xl font-semibold mb-1'>{currentBook?.name}</h1>
+          <span className='text-sm'>{currentBook?.description}</span>
         </div>
         <div>
           <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
             <div className='col-span-3 bg-white p-4 rounded border'>
               {selectedDuration === 'custom_range' && (
-                <div className='flex gap-4 mb-4'>
-                  <div className='flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs'>
-                    <span className='text-base font-medium'>Duration:</span>
-                    <Select
-                      defaultValue='this_month'
-                      onValueChange={(value) => setSelectedDuration(value)}
-                      value={selectedDuration}
-                    >
-                      <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Duration</SelectLabel>
-                          <SelectItem value='this_month'>This Month</SelectItem>
-                          <SelectItem value='last_month'>Last Month</SelectItem>
-                          <SelectItem value='this_year'>This Year</SelectItem>
-                          <SelectItem value='all_time'>All Time</SelectItem>
-                          <SelectItem value='custom_range'>
-                            Custom Range
-                          </SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <span className='text-base font-medium mx-2'>From:</span>
-                    <Popover open={fromDateOpen} onOpenChange={setFromDateOpen}>
-                      <PopoverTrigger
-                        asChild
-                        className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
-                      >
-                        <Button
-                          variant='outline'
-                          id='date'
-                          className='justify-between font-normal'
-                        >
-                          {fromDate
-                            ? fromDate.toLocaleDateString()
-                            : 'Select date'}
-                          <CalendarDays />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className='w-auto overflow-hidden p-0'
-                        align='start'
-                      >
-                        <Calendar
-                          mode='single'
-                          selected={fromDate}
-                          captionLayout='dropdown'
-                          onSelect={(date) => {
-                            setFromDate(date);
-                            setFromDateOpen(false);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <span className='text-base font-medium mx-2'>To:</span>
-                    <Popover open={toDateOpen} onOpenChange={setToDateOpen}>
-                      <PopoverTrigger
-                        asChild
-                        className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
-                      >
-                        <Button
-                          variant='outline'
-                          id='date'
-                          className='justify-between font-normal'
-                        >
-                          {toDate ? toDate.toLocaleDateString() : 'Select date'}
-                          <CalendarDays />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className='w-auto overflow-hidden p-0'
-                        align='start'
-                      >
-                        <Calendar
-                          mode='single'
-                          selected={toDate}
-                          captionLayout='dropdown'
-                          onSelect={(date) => {
-                            setToDate(date);
-                            setToDateOpen(false);
-                          }}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
+                <DurationSelector
+                  selectedDuration={selectedDuration}
+                  setSelectedDuration={setSelectedDuration}
+                  setCustomDuration={setCustomDuration}
+                />
               )}
               <div className='flex flex-col md:flex-row gap-4 mb-4'>
                 {selectedDuration !== 'custom_range' && (
-                  <div className='flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs'>
-                    <span className='text-base font-medium'>Duration:</span>
-                    <Select
-                      defaultValue='this_month'
-                      onValueChange={(value) => setSelectedDuration(value)}
-                      value={selectedDuration}
-                    >
-                      <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Duration</SelectLabel>
-                          <SelectItem value='this_month'>This Month</SelectItem>
-                          <SelectItem value='last_month'>Last Month</SelectItem>
-                          <SelectItem value='this_year'>This Year</SelectItem>
-                          <SelectItem value='all_time'>All Time</SelectItem>
-                          <SelectItem value='custom_range'>
-                            Custom Range
-                          </SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <DurationSelector
+                    selectedDuration={selectedDuration}
+                    setSelectedDuration={setSelectedDuration}
+                  />
                 )}
                 <div className='flex gap-0 items-center bg-purple-100 text-purple-800 px-2 rounded-xs'>
                   <span className='text-base font-medium'>Category:</span>
@@ -321,18 +287,49 @@ const BookDetail = () => {
               </div>
               <div className='flex gap-4 mb-4'>
                 <InputGroup className='rounded-xs'>
-                  <InputGroupInput placeholder='Search by remark or amount...' />
-                  <InputGroupAddon align='inline-end'>
-                    <InputGroupButton size='icon-sm'>
-                      <Search />
-                    </InputGroupButton>
-                  </InputGroupAddon>
+                  <InputGroupInput
+                    placeholder='Search by remark...'
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </InputGroup>
-                {/* <Button className='rounded-xs'>Add New Expense</Button> */}
-                <ExpenseForm
-                  categories={expenseCategories}
-                  paymentModes={paymentModes}
-                />
+                <InputGroup className='rounded-xs'>
+                  <InputGroupAddon align='inline-start'>
+                    <Select
+                      defaultValue='gte'
+                      onValueChange={(value) =>
+                        setAmountQuery({
+                          ...amountQuery,
+                          condition: value as 'gte' | 'lte',
+                        })
+                      }
+                    >
+                      <SelectTrigger className='border-0 shadow-none px-1 gap-1 text-base font-medium'>
+                        <SelectValue placeholder='' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem className='font-medium' value='gte'>
+                            Amount <span className='text-lg'> &ge;</span>
+                          </SelectItem>
+                          <SelectItem className='font-medium' value='lte'>
+                            Amount <span className='text-lg'> &le;</span>
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    type='number'
+                    placeholder='Enter search query'
+                    onChange={(e) =>
+                      setAmountQuery({
+                        ...amountQuery,
+                        amount: Number(e.target.value),
+                      })
+                    }
+                  />
+                </InputGroup>
+                <ExpenseForm />
               </div>
               <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
                 <div className='col-span-4 flex gap-2 items-center justify-center'>
@@ -345,9 +342,16 @@ const BookDetail = () => {
                     <span className='font-medium text-base'>
                       Selected Period
                     </span>
-                    <h1 className='text-2xl md:text-4xl font-medium'>
-                      {getRupeeSymbol()}50000
-                    </h1>
+                    {totalExpensesOfDurationLoading ? (
+                      <Loader show={totalExpensesOfDurationLoading} />
+                    ) : (
+                      <h1 className='text-2xl md:text-4xl font-medium'>
+                        {getRupeeSymbol()}
+                        {(totalExpensesOfDuration &&
+                          totalExpensesOfDuration[0]?.sum) ||
+                          0}
+                      </h1>
+                    )}
                   </div>
                 </div>
                 <div className='col-span-1 flex justify-center'>
@@ -361,13 +365,23 @@ const BookDetail = () => {
                   </div>
                   <div className='flex flex-col'>
                     <span className='font-medium text-base'>All Time</span>
-                    <h1 className='text-2xl md:text-4xl font-medium'>
-                      {getRupeeSymbol()}100000
-                    </h1>
+                    {totalExpensesOfAllTimeLoading ? (
+                      <Loader show={totalExpensesOfAllTimeLoading} />
+                    ) : (
+                      <h1 className='text-2xl md:text-4xl font-medium'>
+                        {getRupeeSymbol()}{' '}
+                        {(totalExpensesOfAllTime &&
+                          totalExpensesOfAllTime[0]?.sum) ||
+                          0}
+                      </h1>
+                    )}
                   </div>
                 </div>
               </div>
-              <BookExpenses />
+              <BookExpenses
+                expenses={BookExpenseData?.data}
+                isLoading={BookExpensesLoading}
+              />
             </div>
             <div className='col-span-2 bg-white p-4 rounded shadow'>
               <h1>Analysis</h1>

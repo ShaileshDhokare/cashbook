@@ -19,23 +19,27 @@ export type UpdateExpenseInput = {
 };
 
 export type ExpenseFilters = {
-  startDate?: string | null; // Format: 'YYYY-MM-DD'
-  endDate?: string | null; // Format: 'YYYY-MM-DD'
-  categoryIds?: number[]; // Array of IDs from multi-select
-  paymentModeIds?: number[]; // Array of IDs from multi-select
-  searchQuery?: string; // Text for remark or amount
-  page: number; // 1-based index (Page 1, Page 2...)
-  pageSize: number; // How many items per page (10, 25, 50)
+  startDate?: string | null;
+  endDate?: string | null;
+  categoryIds?: number[];
+  paymentModeIds?: number[];
+  searchQuery?: string;
+  page?: number;
+  pageSize?: number;
+  amountQuery?: {
+    condition: 'gte' | 'lte';
+    amount: number;
+  };
 };
 
 export type PaginatedResponse<T> = {
   data: T[];
   meta: {
-    totalItems: number; // Total count in DB
-    totalPages: number; // Total pages available
-    currentPage: number; // The page we are on
-    from: number; // "Showing 1..."
-    to: number; // "...to 10"
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+    from: number;
+    to: number;
   };
 };
 
@@ -46,9 +50,40 @@ export type ExpenseWithDetails = Expense & {
 
 export const EXPENSE_KEYS = {
   all: ['expenses'] as const,
-  byBook: (bookId: number, filters: ExpenseFilters) =>
-    ['expenses', { bookId, ...filters }] as const,
+  byBook: (bookId: number, userId: string, filters: ExpenseFilters) =>
+    ['expenses', { bookId, userId, ...filters }] as const,
+  total: (bookId: number, userId: string, filters: ExpenseFilters) =>
+    ['total', { bookId, userId, ...filters }] as const,
+  top: (userId: string) => ['top_expenses', userId] as const,
 };
+
+function applyFilters(query: any, filters: ExpenseFilters) {
+  if (filters.startDate) query = query.gte('date', filters.startDate);
+  if (filters.endDate) query = query.lte('date', filters.endDate);
+  if (filters.categoryIds?.length)
+    query = query.in('category_id', filters.categoryIds);
+  if (filters.paymentModeIds?.length)
+    query = query.in('payment_mode_id', filters.paymentModeIds);
+
+  // let orConditions = [];
+  if (filters.searchQuery?.trim()) {
+    const q = filters.searchQuery.trim();
+    query.ilike('remark', `%${q}%`);
+  }
+  if (filters.amountQuery) {
+    const { condition, amount } = filters.amountQuery;
+    if (amount && amount > 0) {
+      // orConditions.push(`${condition}(amount, ${Number(amount)})`);
+      if (condition === 'gte') {
+        query = query.gte('amount', amount);
+      } else if (condition === 'lte') {
+        query = query.lte('amount', amount);
+      }
+    }
+  }
+  // query = orConditions.length > 0 ? query.or(orConditions.join(',')) : query;
+  return query;
+}
 
 // 1. LIST ALL EXPENSES
 export function useExpenses() {
@@ -68,70 +103,46 @@ export function useExpenses() {
 }
 
 // 2. LIST EXPENSES BY BOOK (Optional but highly recommended)
-export function useExpensesByBook(bookId: number, filters: ExpenseFilters) {
+export function useExpensesByBook(
+  bookId: number,
+  userId: string,
+  filters: ExpenseFilters = {}
+) {
   return useQuery({
-    // 1. Add page and pageSize to queryKey so it refetches when they change
-    queryKey: EXPENSE_KEYS.byBook(bookId, filters),
+    queryKey: EXPENSE_KEYS.byBook(bookId, userId, filters),
 
-    // 2. This keeps the OLD data visible while the NEW page loads (no flashing spinners)
     placeholderData: keepPreviousData,
 
     queryFn: async () => {
-      const { page, pageSize, ...restFilters } = filters;
+      const { page = 1, pageSize = 25, ...restFilters } = filters;
 
-      // Calculate Range for Supabase (0-based index)
-      // Page 1 (size 10): from 0, to 9
-      // Page 2 (size 10): from 10, to 19
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
 
-      // Start Query
       let query = supabase
         .from('expenses')
-        .select(
-          `
-          *,
-          categories ( name ),
-          payment_modes ( name )
-        `,
-          { count: 'exact' }
-        ) // IMPORTANT: Ask Supabase for the total count
-        .eq('book_id', bookId);
+        .select(`*, categories ( name ), payment_modes ( name )`, {
+          count: 'exact',
+        })
+        .eq('book_id', bookId)
+        .eq('user_id', userId);
 
-      // --- APPLY EXISTING FILTERS (Same as before) ---
-      if (restFilters.startDate)
-        query = query.gte('date', restFilters.startDate);
-      if (restFilters.endDate) query = query.lte('date', restFilters.endDate);
-      if (restFilters.categoryIds?.length)
-        query = query.in('category_id', restFilters.categoryIds);
-      if (restFilters.paymentModeIds?.length)
-        query = query.in('payment_mode_id', restFilters.paymentModeIds);
+      query = applyFilters(query, restFilters);
 
-      if (restFilters.searchQuery?.trim()) {
-        const q = restFilters.searchQuery.trim();
-        const orConditions = `remark.ilike.%${q}%,amount::text.ilike.%${q}%`;
-        query = query.or(orConditions);
-      }
-
-      // --- APPLY PAGINATION & SORT ---
-      query = query.order('date', { ascending: false }).range(from, to); // Limit the results
+      query = query.order('date', { ascending: false }).range(from, to);
 
       const { data, error, count } = await query;
       if (error) throw error;
 
-      // Handle case where count is null (shouldn't happen with count: 'exact')
       const totalItems = count ?? 0;
 
-      // Construct Response
       return {
         data: data as unknown as ExpenseWithDetails[],
         meta: {
           totalItems,
           totalPages: Math.ceil(totalItems / pageSize),
           currentPage: page,
-          // Human readable 'from' (1 instead of 0)
           from: totalItems === 0 ? 0 : from + 1,
-          // Human readable 'to' (Cannot exceed total items)
           to: totalItems === 0 ? 0 : Math.min(to + 1, totalItems),
         },
       } as PaginatedResponse<ExpenseWithDetails>;
@@ -196,5 +207,50 @@ export function useDeleteExpense() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all });
     },
+  });
+}
+
+// 6. TOTAL OF EXPENSES
+export function useTotalOfExpenses(
+  bookId: number,
+  userId: string,
+  filters: ExpenseFilters = {}
+) {
+  return useQuery({
+    queryKey: EXPENSE_KEYS.total(bookId, userId, filters),
+    queryFn: async () => {
+      let query = supabase
+        .from('expenses')
+        .select('amount.sum()')
+        .eq('book_id', bookId)
+        .eq('user_id', userId);
+
+      query = applyFilters(query, filters);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!bookId,
+  });
+}
+
+// 7. GET TOP 10 expenses
+export function useTopExpenses(userId: string) {
+  return useQuery({
+    queryKey: EXPENSE_KEYS.top(userId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('expenses')
+        .select(`*, categories ( name ), payment_modes ( name )`, {
+          count: 'exact',
+        })
+        .eq('user_id', userId)
+        .order('amount', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data as ExpenseWithDetails[];
+    },
+    enabled: !!userId,
   });
 }

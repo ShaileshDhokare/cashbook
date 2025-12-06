@@ -27,6 +27,15 @@ export type Book = {
   created_at?: string;
 };
 
+export type BookWithExpenseSummary = {
+  id: number;
+  name: string;
+  description: string;
+  all_time: number;
+  this_month: number;
+  this_year: number;
+};
+
 export type PaymentMode = {
   id: number;
   user_id: number;
@@ -42,4 +51,9 @@ export type Category = {
   name: string;
   is_active?: boolean;
   created_at?: string;
+};
+
+export type DateRange = {
+  startDate: string;
+  endDate: string;
 };

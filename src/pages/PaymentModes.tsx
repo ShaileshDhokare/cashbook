@@ -19,64 +19,95 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SquarePen, Trash2 } from 'lucide-react';
-import type { PaymentMode } from '../utils/types';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  useAddPaymentMode,
+  usePaymentModes,
+} from '@/services/paymentModeServices';
+import { useAuthStore } from '@/store/authStore';
+import { Spinner } from '@/components/ui/spinner';
+import { useEffect, useState } from 'react';
+import Loader from '@/components/content/Loader';
 
-const paymentModesData: PaymentMode[] = [
-  {
-    id: 1,
-    user_id: 1,
-    name: 'Cash',
-    is_active: true,
-    created_at: '2023-10-01',
-  },
-  {
-    id: 2,
-    user_id: 1,
-    name: 'Credit Card',
-    is_active: true,
-    created_at: '2023-10-05',
-  },
-  {
-    id: 3,
-    user_id: 1,
-    name: 'Debit Card',
-    is_active: true,
-    created_at: '2023-10-07',
-  },
-  {
-    id: 4,
-    user_id: 1,
-    name: 'Bank Transfer',
-    is_active: false,
-    created_at: '2023-10-10',
-  },
-  {
-    id: 5,
-    user_id: 1,
-    name: 'Mobile Wallet',
-    is_active: true,
-    created_at: '2023-10-12',
-  },
-];
+const PaymentModeSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: 'Name must be at least 3 characters long.' })
+    .max(50, { message: 'Name cannot exceed 50 characters.' }),
+});
+
+export type NewPaymentModeFormData = z.infer<typeof PaymentModeSchema>;
 
 const PaymentModes = () => {
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  const { data: paymentModes, isLoading } = usePaymentModes(userId);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<NewPaymentModeFormData>({
+    resolver: zodResolver(PaymentModeSchema),
+    defaultValues: {
+      name: '',
+    },
+  });
+
+  const {
+    mutate,
+    isPending,
+    isError,
+    isSuccess,
+    data: newPaymentModeData,
+  } = useAddPaymentMode();
+
+  const onSubmit = (data: NewPaymentModeFormData) => {
+    mutate({
+      ...data,
+      user_id: userId,
+      is_active: true,
+    });
+  };
+
+  useEffect(() => {
+    if (!isError && isSuccess && newPaymentModeData) {
+      setOpenModal(false);
+      reset();
+    }
+  }, [newPaymentModeData, isSuccess, isError, reset]);
+
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto'>
         <div className='flex justify-end p-3'>
-          <Dialog>
-            <form>
-              <DialogTrigger asChild>
-                <Button className='rounded-xs'>Add New Payment Mode</Button>
-              </DialogTrigger>
-              <DialogContent className='sm:max-w-[425px]'>
-                <DialogHeader>
-                  <DialogTitle>Add New Payment Mode</DialogTitle>
-                </DialogHeader>
+          <Dialog open={openModal} onOpenChange={setOpenModal}>
+            <DialogTrigger asChild>
+              <Button className='rounded-xs'>Add New Payment Mode</Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-[425px]'>
+              <DialogHeader>
+                <DialogTitle>Add New Payment Mode</DialogTitle>
+              </DialogHeader>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className='flex flex-col gap-4'
+              >
                 <div className='grid gap-3'>
                   <div className='grid gap-2'>
                     <Label htmlFor='name'>Name</Label>
-                    <Input id='name' name='name' />
+                    <Input type='text' id='name' {...register('name')} />
+                    {errors.name && (
+                      <p className='text-sm text-red-500'>
+                        {errors.name.message}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <DialogFooter>
@@ -85,12 +116,17 @@ const PaymentModes = () => {
                       Cancel
                     </Button>
                   </DialogClose>
-                  <Button type='submit' size='sm' className='rounded-xs'>
-                    Add
+                  <Button
+                    type='submit'
+                    size='sm'
+                    className='rounded-xs'
+                    disabled={isPending || !isValid}
+                  >
+                    {isPending && <Spinner />} Add
                   </Button>
                 </DialogFooter>
-              </DialogContent>
-            </form>
+              </form>
+            </DialogContent>
           </Dialog>
         </div>
         <Table className='mt-3 w-full border-collapse'>
@@ -114,7 +150,7 @@ const PaymentModes = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paymentModesData.map((paymentMode) => (
+            {paymentModes?.map((paymentMode) => (
               <TableRow key={paymentMode.id}>
                 <TableCell className='px-4 py-2 font-medium border border-gray-200'>
                   {paymentMode.id}
@@ -123,10 +159,20 @@ const PaymentModes = () => {
                   {paymentMode.name}
                 </TableCell>
                 <TableCell className='px-4 py-2 border border-gray-200'>
-                  {paymentMode.is_active ? 'Active' : 'Inactive'}
+                  {paymentMode.is_active ? (
+                    <span className='px-2 py-1 font-medium rounded-4xl bg-green-200 text-green-800'>
+                      Active
+                    </span>
+                  ) : (
+                    <span className='px-2 py-1 font-medium rounded-4xl bg-red-200 text-red-800'>
+                      Inactive
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className='px-4 py-2 border border-gray-200'>
-                  {paymentMode.created_at}
+                  {paymentMode.created_at
+                    ? new Date(paymentMode.created_at).toLocaleDateString()
+                    : '-'}
                 </TableCell>
                 <TableCell className='px-4 py-2 border border-gray-200 w-fit'>
                   <div className='flex gap-2'>
@@ -146,6 +192,13 @@ const PaymentModes = () => {
                 </TableCell>
               </TableRow>
             ))}
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={5}>
+                  <Loader show={true} />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

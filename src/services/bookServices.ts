@@ -1,4 +1,4 @@
-import type { Book } from './../utils/types';
+import type { Book, BookWithExpenseSummary } from './../utils/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 
@@ -13,17 +13,19 @@ export type UpdateBookInput = {
 
 export const BOOK_KEYS = {
   all: ['books'] as const,
+  allWithTotalExpenses: ['books', 'totalExpenses'] as const,
   detail: (id: number) => ['books', id] as const,
 };
 
 // 1. LIST ALL BOOKS
-export function useBooks() {
+export function useBooks(userId: string) {
   return useQuery({
     queryKey: BOOK_KEYS.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('books')
         .select('*')
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -71,6 +73,21 @@ export function useUpdateBook() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: BOOK_KEYS.all });
+    },
+  });
+}
+
+// 4. GET BOOKS with total expenses of all time, current month and current year
+export function useBooksWithTotalExpenses(userId: string) {
+  return useQuery({
+    queryKey: BOOK_KEYS.allWithTotalExpenses,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_books_summary', {
+        userid: userId,
+      });
+
+      if (error) throw error;
+      return data as BookWithExpenseSummary[];
     },
   });
 }

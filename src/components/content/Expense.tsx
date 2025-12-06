@@ -6,10 +6,10 @@ import {
   getFormattedTime,
   getRupeeSymbol,
 } from '@/utils/commonUtils';
-import type { ExpenseShow } from '@/utils/types';
+import type { ExpenseWithDetails } from '@/services/expenseServices';
 
 type ExpenseProps = {
-  expense: ExpenseShow;
+  expense: ExpenseWithDetails;
   showActions?: boolean;
   displayDate: 'created_at' | 'date';
 };
@@ -19,7 +19,7 @@ const Expense = ({
   showActions = true,
   displayDate,
 }: ExpenseProps) => {
-  const { id, category, payment_mode, amount, remark, created_at, date } =
+  const { categories, payment_modes, amount, remark, created_at, date } =
     expense;
 
   const getExpenseDate = (
@@ -77,10 +77,10 @@ const Expense = ({
         </div>
         <div className='flex gap-2 w-full'>
           <span className='px-1 text-sm border rounded-sm bg-purple-100 text-purple-800'>
-            {category}
+            {categories?.name}
           </span>
           <span className='px-1 text-sm border rounded-sm bg-indigo-100 text-indigo-800'>
-            {payment_mode}
+            {payment_modes?.name}
           </span>
           {getExpenseDate(displayDate)}
         </div>

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import Footer from './components/content/Footer';
 import Header from './components/content/Header';
@@ -12,21 +12,24 @@ import PaymentModes from './pages/PaymentModes';
 import Register from './pages/Register';
 import { supabase } from './supabaseClient';
 import { useAuthStore } from './store/authStore';
+import ProtectedRoute from './components/ProtectedRoute';
+import Loader from './components/content/Loader';
 
 function App() {
-  const navigate = useNavigate();
-
   const setSession = useAuthStore((state: any) => state.setSession);
   const setError = useAuthStore((state: any) => state.setError);
-  const userProfile = useAuthStore((state: any) => state.user);
+
+  const [isLoadingSession, setIsLoadingSession] = useState(true);
 
   const fetchSession = async () => {
+    setIsLoadingSession(true);
     const { data, error } = await supabase.auth.getSession();
     if (data && !error) {
       setSession(data.session);
     } else if (error) {
       setError(error);
     }
+    setIsLoadingSession(false);
   };
 
   useEffect(() => {
@@ -35,6 +38,7 @@ function App() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
+        setIsLoadingSession(false);
       }
     );
 
@@ -43,13 +47,9 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!userProfile) {
-      navigate('/login');
-    } else {
-      navigate('/dashboard');
-    }
-  }, [userProfile]);
+  if (isLoadingSession) {
+    return <Loader show={isLoadingSession} />;
+  }
 
   const logoutUser = async () => {
     const { error } = await supabase.auth.signOut();
@@ -67,10 +67,13 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/books' element={<BooksList />} />
-        <Route path='/book/:id' element={<BookDetail />} />
-        <Route path='/payment-modes' element={<PaymentModes />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/books' element={<BooksList />} />
+          <Route path='/book/:bookId' element={<BookDetail />} />
+          <Route path='/payment-modes' element={<PaymentModes />} />
+        </Route>
       </Routes>
       <Footer />
     </>

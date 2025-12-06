@@ -15,14 +15,15 @@ export const PAYMENT_MODE_KEYS = {
 };
 
 // 1. LIST ALL PAYMENT MODES
-export function usePaymentModes() {
+export function usePaymentModes(user_id: string) {
   return useQuery({
     queryKey: PAYMENT_MODE_KEYS.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('payment_modes')
         .select('*')
-        .order('created_at', { ascending: false });
+        .eq('user_id', user_id)
+        .order('name', { ascending: true });
 
       if (error) throw error;
       return data as PaymentMode[];

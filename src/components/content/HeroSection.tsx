@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ChartBar, CalendarCheck, Coins } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   return (
@@ -13,7 +14,7 @@ export function HeroSection() {
           savings goals.
         </p>
         <Button size='lg' className='bg-blue-600 hover:bg-blue-700'>
-          Get Started
+          <Link to='/register'>Get Started</Link>
         </Button>
       </div>
 

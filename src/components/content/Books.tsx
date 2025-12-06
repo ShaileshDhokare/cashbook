@@ -13,52 +13,18 @@ import {
   ItemDescription,
   ItemTitle,
 } from '@/components/ui/item';
+import { useBooksWithTotalExpenses } from '@/services/bookServices';
+import { useAuthStore } from '@/store/authStore';
 import { getRupeeSymbol } from '@/utils/commonUtils';
 import { Link } from 'react-router-dom';
 
 const Books = () => {
-  const data = [
-    {
-      id: 1,
-      title: 'Monthly Expense Tracker',
-      desc: 'A book to track monthly expenses at home like rent, groceries, and utilities.',
-      amount: 10000,
-      thisMonth: 2000,
-      thisYear: 5000,
-    },
-    {
-      id: 2,
-      title: 'Business Expenses',
-      desc: 'Track business-related expenses, invoices, and reimbursements.',
-      amount: 250000,
-      thisMonth: 45000,
-      thisYear: 120000,
-    },
-    {
-      id: 3,
-      title: 'Travel Fund',
-      desc: 'Plan and track travel savings and trip-related expenses.',
-      amount: 50000,
-      thisMonth: 5000,
-      thisYear: 15000,
-    },
-    {
-      id: 4,
-      title: 'Savings Goals',
-      desc: 'Monitor savings goals for short and long term plans.',
-      amount: 150000,
-      thisMonth: 10000,
-      thisYear: 40000,
-    },
-    {
-      id: 5,
-      title: 'Household Budget',
-      desc: 'Manage household recurring costs and one-off purchases.',
-      amount: 80000,
-      thisMonth: 12000,
-      thisYear: 30000,
-    },
-  ];
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+
+  const { data: books } = useBooksWithTotalExpenses(userId);
+
   return (
     <Card>
       <CardHeader>
@@ -71,30 +37,30 @@ const Books = () => {
       </CardHeader>
       <CardContent className='px-4'>
         <div className='flex w-full flex-col gap-4'>
-          {data.map((book) => (
+          {books?.map((book) => (
             <Item key={book.id} variant='outline'>
               <ItemContent>
                 <div className='flex flex-row justify-between'>
-                  <ItemTitle className='text-xl'>{book.title}</ItemTitle>
+                  <ItemTitle className='text-xl'>{book.name}</ItemTitle>
                   <Button variant='secondary' size='sm' asChild>
                     <Link to={`/book/${book.id}`}>View</Link>
                   </Button>
                 </div>
-                <ItemDescription>{book.desc}</ItemDescription>
+                <ItemDescription>{book.description}</ItemDescription>
                 <div className='w-full mt-4 flex flex-row gap-4 justify-between items-center'>
                   <h1 className='text-2xl font-bold'>
                     {getRupeeSymbol()}
-                    {new Intl.NumberFormat('en-IN').format(book.amount)}
+                    {new Intl.NumberFormat('en-IN').format(book.all_time)}
                   </h1>
                   <p className='text-base font-semibold'>
                     <span className='text-gray-500'>This Month:</span>{' '}
                     {getRupeeSymbol()}
-                    {new Intl.NumberFormat('en-IN').format(book.thisMonth)}
+                    {new Intl.NumberFormat('en-IN').format(book.this_month)}
                   </p>
                   <p className='text-base font-semibold'>
                     <span className='text-gray-500'>This Year:</span>{' '}
                     {getRupeeSymbol()}
-                    {new Intl.NumberFormat('en-IN').format(book.thisYear)}
+                    {new Intl.NumberFormat('en-IN').format(book.this_year)}
                   </p>
                 </div>
               </ItemContent>

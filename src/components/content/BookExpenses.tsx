@@ -8,9 +8,16 @@ import {
   SelectValue,
 } from '../ui/select';
 import Expense from './Expense';
-import { sampleExpenses } from './TopExpenses';
+import type { ExpenseWithDetails } from '@/services/expenseServices';
+import Loader from './Loader';
 
-const BookExpenses = () => {
+const BookExpenses = ({
+  expenses,
+  isLoading,
+}: {
+  expenses?: ExpenseWithDetails[];
+  isLoading?: boolean;
+}) => {
   return (
     <div>
       <div className='flex items-center justify-between mb-3 px-3'>
@@ -46,14 +53,18 @@ const BookExpenses = () => {
       </div>
       <div className='rounded-sm'>
         <div className='flex flex-col gap-3'>
-          {sampleExpenses.map((expense) => (
-            <Expense
-              key={expense.id}
-              expense={expense}
-              showActions={true}
-              displayDate='created_at'
-            />
-          ))}
+          {isLoading ? (
+            <Loader show={isLoading} />
+          ) : (
+            expenses?.map((expense) => (
+              <Expense
+                key={expense.id}
+                expense={expense}
+                showActions={true}
+                displayDate='created_at'
+              />
+            ))
+          )}
         </div>
       </div>
     </div>

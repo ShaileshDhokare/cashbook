@@ -53,7 +53,6 @@ export default function Login() {
   const onSubmit = async (data: LoginFormData) => {
     login(data, {
       onSuccess: (data) => {
-        console.log('Logged in!', data);
         setSession(data?.session);
         navigate('/dashboard');
       },

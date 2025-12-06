@@ -15,13 +15,15 @@ export const CATEGORY_KEYS = {
 };
 
 // 1. LIST ALL CATEGORIES
-export function useCategories() {
+export function useCategories(user_id: string, book_id: number) {
   return useQuery({
     queryKey: CATEGORY_KEYS.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
+        .eq('user_id', user_id)
+        .eq('book_id', book_id)
         .order('name', { ascending: true });
 
       if (error) throw error;
