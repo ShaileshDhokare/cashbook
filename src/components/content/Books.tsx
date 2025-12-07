@@ -29,11 +29,6 @@ const Books = () => {
     <Card>
       <CardHeader>
         <CardTitle className='text-xl'>Books</CardTitle>
-        <CardAction>
-          <Button variant='outline' size='sm'>
-            Add New Book
-          </Button>
-        </CardAction>
       </CardHeader>
       <CardContent className='px-4'>
         <div className='flex w-full flex-col gap-4'>

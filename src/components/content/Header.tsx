@@ -19,8 +19,8 @@ export default function Header({ logoutUser }: HeaderProps) {
   const userProfile = useAuthStore((state: any) => state.user);
 
   return (
-    <header className='fixed top-0 left-0 right-0 z-50 w-full px-6 py-4 shadow-md bg-gray-100 border-b border-gray-200'>
-      <div className='grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-0'>
+    <header className='fixed top-0 left-0 right-0 z-50 w-full px-6 py-3 md:py-2 shadow-md bg-gray-100 border-b border-gray-200'>
+      <div className='grid grid-cols-1 md:grid-cols-6 gap-2 md:gap-0'>
         <div className='col-span-1'>
           <div className='flex'>
             <img

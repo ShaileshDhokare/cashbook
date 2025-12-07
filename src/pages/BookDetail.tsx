@@ -104,13 +104,13 @@ const BookDetail = () => {
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto h-min-screen'>
-        <div className='my-4 bg-blue-100 text-blue-800 rounded-xs p-2 text-center'>
+        <div className='my-2 bg-blue-100 text-blue-800 rounded-xs p-2 text-center'>
           <h1 className='text-2xl font-semibold mb-1'>{currentBook?.name}</h1>
           <span className='text-sm'>{currentBook?.description}</span>
         </div>
         <div>
-          <div className='grid grid-cols-1 lg:grid-cols-5 gap-4'>
-            <div className='col-span-3 bg-white p-4 rounded border'>
+          <div className='grid grid-cols-1 lg:grid-cols-9 gap-4'>
+            <div className='col-start-2 col-span-7 bg-white p-4 rounded border'>
               {selectedDuration === 'custom_range' && (
                 <DurationSelector
                   selectedDuration={selectedDuration}
@@ -153,56 +153,58 @@ const BookDetail = () => {
                 </div>
                 <Button
                   variant='ghost'
-                  className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900'
+                  className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900 max-w-[120px]'
                 >
                   <X />
                   Clear
                 </Button>
               </div>
-              <div className='flex gap-4 mb-4'>
-                <InputGroup className='rounded-xs'>
-                  <InputGroupInput
-                    placeholder='Search by remark...'
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </InputGroup>
-                <InputGroup className='rounded-xs'>
-                  <InputGroupAddon align='inline-start'>
-                    <Select
-                      defaultValue='gte'
-                      onValueChange={(value) =>
+              <div className='flex sm:flex-row flex-col gap-4 mb-4 justify-between'>
+                <div className='flex gap-4 w-full'>
+                  <InputGroup className='rounded-xs'>
+                    <InputGroupInput
+                      placeholder='Search by remark...'
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </InputGroup>
+                  <InputGroup className='rounded-xs'>
+                    <InputGroupAddon align='inline-start'>
+                      <Select
+                        defaultValue='gte'
+                        onValueChange={(value) =>
+                          setAmountQuery({
+                            ...amountQuery,
+                            condition: value as 'gte' | 'lte',
+                          })
+                        }
+                      >
+                        <SelectTrigger className='border-0 shadow-none px-1 gap-1 text-base font-medium'>
+                          <SelectValue placeholder='' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem className='font-medium' value='gte'>
+                              Amount <span className='text-lg'> &ge;</span>
+                            </SelectItem>
+                            <SelectItem className='font-medium' value='lte'>
+                              Amount <span className='text-lg'> &le;</span>
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      type='number'
+                      placeholder='Enter search query'
+                      onChange={(e) =>
                         setAmountQuery({
                           ...amountQuery,
-                          condition: value as 'gte' | 'lte',
+                          amount: Number(e.target.value),
                         })
                       }
-                    >
-                      <SelectTrigger className='border-0 shadow-none px-1 gap-1 text-base font-medium'>
-                        <SelectValue placeholder='' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem className='font-medium' value='gte'>
-                            Amount <span className='text-lg'> &ge;</span>
-                          </SelectItem>
-                          <SelectItem className='font-medium' value='lte'>
-                            Amount <span className='text-lg'> &le;</span>
-                          </SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    type='number'
-                    placeholder='Enter search query'
-                    onChange={(e) =>
-                      setAmountQuery({
-                        ...amountQuery,
-                        amount: Number(e.target.value),
-                      })
-                    }
-                  />
-                </InputGroup>
+                    />
+                  </InputGroup>
+                </div>
                 <ExpenseForm />
               </div>
               <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
@@ -256,9 +258,6 @@ const BookDetail = () => {
                 expenses={BookExpenseData?.data}
                 isLoading={BookExpensesLoading}
               />
-            </div>
-            <div className='col-span-2 bg-white p-4 rounded shadow'>
-              <h1>Analysis</h1>
             </div>
           </div>
         </div>

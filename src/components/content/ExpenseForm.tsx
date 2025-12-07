@@ -160,7 +160,7 @@ const ExpenseForm = () => {
       <DialogTrigger asChild>
         <Button className='rounded-xs'>Add New Expense</Button>
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px] rounded-xs'>
+      <DialogContent className='rounded-xs'>
         {!manageCategory && (
           <>
             <DialogHeader>
@@ -169,7 +169,7 @@ const ExpenseForm = () => {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className='grid gap-3'>
-              <div className='grid gap-3'>
+              <div className='grid gap-3 max-w-[90%] md:max-w-full'>
                 <div className='grid gap-2'>
                   <Label htmlFor='date'>Date</Label>
                   <Controller
@@ -215,7 +215,7 @@ const ExpenseForm = () => {
                   )}
                 </div>
               </div>
-              <div className='grid gap-3'>
+              <div className='grid gap-3 max-w-[90%] md:max-w-full'>
                 <div className='grid gap-2'>
                   <Label htmlFor='amount'>Amount</Label>
                   <Input
@@ -230,7 +230,7 @@ const ExpenseForm = () => {
                   )}
                 </div>
               </div>
-              <div className='grid gap-3'>
+              <div className='grid gap-3 max-w-[90%] md:max-w-full'>
                 <div className='grid gap-2'>
                   <Label htmlFor='remark'>Remark</Label>
                   <Input id='remark' {...register('remark')} />
@@ -243,7 +243,7 @@ const ExpenseForm = () => {
               </div>
               <div className='grid gap-3'>
                 <div className='grid gap-3'>
-                  <div className='flex justify-between items-center'>
+                  <div className='flex justify-between items-center max-w-[90%] md:max-w-full'>
                     <Label htmlFor='category'>Category</Label>
                     <Button
                       variant='secondary'
@@ -255,7 +255,7 @@ const ExpenseForm = () => {
                       Manage
                     </Button>
                   </div>
-                  <div className='flex gap-4 justify-between'>
+                  <div className='flex gap-4 justify-between max-w-[90%] md:max-w-full'>
                     <Controller
                       control={control}
                       name='category_id'
@@ -269,7 +269,7 @@ const ExpenseForm = () => {
                               variant='outline'
                               role='combobox'
                               aria-expanded={categoryOpen}
-                              className='w-[240px] justify-between font-normal'
+                              className='md:w-[280px] justify-between font-normal'
                             >
                               {field.value
                                 ? categories?.find(
@@ -347,7 +347,7 @@ const ExpenseForm = () => {
                 </div>
               </div>
               {addCategoryMode && (
-                <div className='flex flex-col gap-2'>
+                <div className='flex flex-col gap-2 max-w-[90%] md:max-w-full'>
                   <div className='flex justify-between items-center gap-4'>
                     <Input
                       name='newCategory'
@@ -368,7 +368,7 @@ const ExpenseForm = () => {
                   )}
                 </div>
               )}
-              <div className='grid gap-3'>
+              <div className='grid gap-3 max-w-[90%] md:max-w-full'>
                 <div className='grid gap-2'>
                   <Label htmlFor='paymentMode'>Payment Mode</Label>
                   <Controller
@@ -405,7 +405,7 @@ const ExpenseForm = () => {
                   )}
                 </div>
               </div>
-              <div className='flex gap-4 justify-end'>
+              <div className='flex gap-4 justify-end max-w-[90%] md:max-w-full'>
                 <DialogClose asChild>
                   <Button variant='outline' size='sm' className='rounded-xs'>
                     Cancel
