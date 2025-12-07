@@ -58,14 +58,6 @@ export default function Header({ logoutUser }: HeaderProps) {
                         asChild
                         className='font-medium text-base text-neutral-500 hover:text-neutral-800'
                       >
-                        <Link to='/books'>Books</Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className=''>
-                      <NavigationMenuLink
-                        asChild
-                        className='font-medium text-base text-neutral-500 hover:text-neutral-800'
-                      >
                         <Link to='/payment-modes'>Payment Modes</Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
