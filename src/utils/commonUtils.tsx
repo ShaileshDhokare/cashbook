@@ -7,7 +7,7 @@ import {
   endOfYear,
   format,
 } from 'date-fns';
-import type { DateRange } from './types';
+import type { DateRange, DurationTypes } from './types';
 
 export function getRupeeSymbol(): React.ReactElement {
   return <span>&#x20B9;</span>;
@@ -78,4 +78,25 @@ export const getCustomDateRange = (fromDate: Date, toDate: Date): DateRange => {
     startDate: format(fromDate, 'yyyy-MM-dd'),
     endDate: format(toDate, 'yyyy-MM-dd'),
   };
+};
+
+export const getExpensesByDuration = (
+  selectedDuration: DurationTypes,
+  customDuration?: { startDate: Date | undefined; endDate: Date | undefined }
+): DateRange => {
+  switch (selectedDuration) {
+    case 'this_month':
+      return getCurrentMonthDateRange();
+    case 'last_month':
+      return getLastMonthDateRange();
+    case 'this_year':
+      return getCurrentYearDateRange();
+    case 'all_time':
+      return getAllTimeDateRange();
+    case 'custom_range':
+      return getCustomDateRange(
+        customDuration?.startDate!,
+        customDuration?.endDate!
+      );
+  }
 };

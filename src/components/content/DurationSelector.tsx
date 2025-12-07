@@ -12,10 +12,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Button } from '../ui/button';
 import { Calendar } from '../ui/calendar';
 import { CalendarDays } from 'lucide-react';
+import type { DurationTypes } from '@/utils/types';
 
 type DurationSelectorProps = {
-  selectedDuration: string;
-  setSelectedDuration: (duration: string) => void;
+  selectedDuration: DurationTypes;
+  setSelectedDuration: (duration: DurationTypes) => void;
   setCustomDuration?: (duration: { startDate: Date; endDate: Date }) => void;
 };
 
@@ -45,7 +46,7 @@ const DurationSelector = ({
           <span className='text-base font-medium'>Duration:</span>
           <Select
             defaultValue='this_month'
-            onValueChange={(value) => setSelectedDuration(value)}
+            onValueChange={(value: DurationTypes) => setSelectedDuration(value)}
             value={selectedDuration}
           >
             <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
@@ -131,7 +132,7 @@ const DurationSelector = ({
       <span className='text-base font-medium'>Duration:</span>
       <Select
         defaultValue='this_month'
-        onValueChange={(value) => setSelectedDuration(value)}
+        onValueChange={(value: DurationTypes) => setSelectedDuration(value)}
         value={selectedDuration}
       >
         <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>

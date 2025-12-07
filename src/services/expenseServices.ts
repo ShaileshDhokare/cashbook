@@ -65,7 +65,6 @@ function applyFilters(query: any, filters: ExpenseFilters) {
   if (filters.paymentModeIds?.length)
     query = query.in('payment_mode_id', filters.paymentModeIds);
 
-  // let orConditions = [];
   if (filters.searchQuery?.trim()) {
     const q = filters.searchQuery.trim();
     query.ilike('remark', `%${q}%`);
@@ -73,7 +72,6 @@ function applyFilters(query: any, filters: ExpenseFilters) {
   if (filters.amountQuery) {
     const { condition, amount } = filters.amountQuery;
     if (amount && amount > 0) {
-      // orConditions.push(`${condition}(amount, ${Number(amount)})`);
       if (condition === 'gte') {
         query = query.gte('amount', amount);
       } else if (condition === 'lte') {
@@ -81,7 +79,6 @@ function applyFilters(query: any, filters: ExpenseFilters) {
       }
     }
   }
-  // query = orConditions.length > 0 ? query.or(orConditions.join(',')) : query;
   return query;
 }
 

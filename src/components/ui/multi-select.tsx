@@ -64,11 +64,12 @@ const MultiSelect = ({
     });
 
   return (
-    <div className='relative min-w-[180px] w-fit' ref={dropdownRef}>
+    <div
+      className='relative min-w-[180px] max-w-[250px] text-zinc-900'
+      ref={dropdownRef}
+    >
       <div
-        className={`flex min-h-[36px] w-full items-center justify-between rounded-md border bg-background px-2 py-1 text-sm cursor-pointer hover:bg-accent/50 ${
-          isOpen ? 'ring-2 ring-ring' : ''
-        }`}
+        className={`flex min-h-9 w-full items-center justify-between rounded-md bg-transparent px-2 py-1 text-sm cursor-pointer`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className='flex flex-wrap gap-1'>
@@ -127,15 +128,20 @@ const MultiSelect = ({
               </div>
             )}
             {showActions && (
-              <div className='flex gap-2 justify-end my-2'>
+              <div className='flex gap-3 justify-end my-2'>
                 <Button
+                  className='cursor-pointer'
                   variant='secondary'
                   size='sm'
                   onClick={() => onChange([])}
                 >
                   Clear
                 </Button>
-                <Button onClick={() => setIsOpen(false)} size='sm'>
+                <Button
+                  className='cursor-pointer'
+                  onClick={() => setIsOpen(false)}
+                  size='sm'
+                >
                   Apply
                 </Button>
               </div>

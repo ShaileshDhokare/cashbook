@@ -57,3 +57,10 @@ export type DateRange = {
   startDate: string;
   endDate: string;
 };
+
+export type DurationTypes =
+  | 'this_month'
+  | 'last_month'
+  | 'this_year'
+  | 'all_time'
+  | 'custom_range';

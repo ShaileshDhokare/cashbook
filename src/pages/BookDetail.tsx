@@ -1,114 +1,42 @@
 import { Button } from '@/components/ui/button';
-import { Check, ChevronsUpDown, Equal, Sigma, X } from 'lucide-react';
+import { Equal, Sigma, X } from 'lucide-react';
 
 import BookExpenses from '@/components/content/BookExpenses';
 import DurationSelector from '@/components/content/DurationSelector';
 import ExpenseForm from '@/components/content/ExpenseForm';
 import Loader from '@/components/content/Loader';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import MultiSelect from '@/components/ui/multi-select';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
 import { useBooks } from '@/services/bookServices';
 import {
   useExpensesByBook,
   useTotalOfExpenses,
 } from '@/services/expenseServices';
 import { useAuthStore } from '@/store/authStore';
-import {
-  getAllTimeDateRange,
-  getCurrentMonthDateRange,
-  getCurrentYearDateRange,
-  getCustomDateRange,
-  getLastMonthDateRange,
-  getRupeeSymbol,
-} from '@/utils/commonUtils';
-import type { DateRange } from '@/utils/types';
+import { getExpensesByDuration, getRupeeSymbol } from '@/utils/commonUtils';
+import type { DateRange, DurationTypes } from '@/utils/types';
 import useDebounce from '@/utils/useDebounce';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-const expenseCategories = [
-  { id: 1, name: 'Rent' },
-  { id: 2, name: 'Groceries' },
-  { id: 3, name: 'Utilities' },
-  { id: 4, name: 'Transport' },
-  { id: 5, name: 'Entertainment' },
-  { id: 6, name: 'Healthcare' },
-  { id: 7, name: 'Education' },
-  { id: 8, name: 'Subscriptions' },
-  { id: 9, name: 'Dining Out' },
-  { id: 10, name: 'Clothing' },
-  { id: 11, name: 'Miscellaneous' },
-];
-
-const paymentModes = [
-  {
-    id: 1,
-    user_id: 1,
-    name: 'Cash',
-    is_active: true,
-    created_at: '2023-10-01',
-  },
-  {
-    id: 2,
-    user_id: 1,
-    name: 'Credit Card',
-    is_active: true,
-    created_at: '2023-10-05',
-  },
-  {
-    id: 3,
-    user_id: 1,
-    name: 'Debit Card',
-    is_active: true,
-    created_at: '2023-10-07',
-  },
-  {
-    id: 4,
-    user_id: 1,
-    name: 'Bank Transfer',
-    is_active: false,
-    created_at: '2023-10-10',
-  },
-  {
-    id: 5,
-    user_id: 1,
-    name: 'Mobile Wallet',
-    is_active: true,
-    created_at: '2023-10-12',
-  },
-];
+import { useCategories } from '@/services/categoryServices';
+import { usePaymentModes } from '@/services/paymentModeServices';
 
 const BookDetail = () => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState('this_month');
+  const [selectedDuration, setSelectedDuration] =
+    useState<DurationTypes>('this_month');
   const [customDuration, setCustomDuration] = useState<{
     startDate: Date | undefined;
     endDate: Date | undefined;
@@ -122,36 +50,31 @@ const BookDetail = () => {
     amount: 0,
   });
 
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
+    []
+  );
+
   const { bookId } = useParams();
 
   const userId = useAuthStore((state: any) => {
     return state.userId;
   });
 
-  const getExpensesByDuration = () => {
-    switch (selectedDuration) {
-      case 'this_month':
-        return getCurrentMonthDateRange();
-      case 'last_month':
-        return getLastMonthDateRange();
-      case 'this_year':
-        return getCurrentYearDateRange();
-      case 'all_time':
-        return getAllTimeDateRange();
-      case 'custom_range':
-        return getCustomDateRange(
-          customDuration?.startDate!,
-          customDuration?.endDate!
-        );
-    }
-  };
+  const { data: bookCategories } = useCategories(userId, Number(bookId));
+  const { data: paymentModes } = usePaymentModes(userId);
 
-  const { startDate, endDate } = getExpensesByDuration() as DateRange;
+  const { startDate, endDate } = getExpensesByDuration(
+    selectedDuration,
+    customDuration
+  ) as DateRange;
   const filters = {
     startDate,
     endDate,
-    categoryIds: [],
-    paymentModeIds: [],
+    categoryIds: useDebounce(selectedCategories, 1500).map((id) => Number(id)),
+    paymentModeIds: useDebounce(selectedPaymentModes, 1500).map((id) =>
+      Number(id)
+    ),
     searchQuery: useDebounce(searchQuery, 1500),
     amountQuery: {
       condition: amountQuery.condition,
@@ -202,80 +125,31 @@ const BookDetail = () => {
                     setSelectedDuration={setSelectedDuration}
                   />
                 )}
-                <div className='flex gap-0 items-center bg-purple-100 text-purple-800 px-2 rounded-xs'>
+                <div className='flex gap-0 items-center w-fit bg-purple-100 text-purple-800 px-2 rounded-xs max-w-[280px]'>
                   <span className='text-base font-medium'>Category:</span>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger
-                      asChild
-                      className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
-                    >
-                      <Button
-                        variant='outline'
-                        role='combobox'
-                        aria-expanded={open}
-                      >
-                        {value
-                          ? expenseCategories.find(
-                              (category) => category.id.toString() === value
-                            )?.name
-                          : 'Select Category'}
-                        <ChevronsUpDown className='opacity-50' />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-[200px] p-0'>
-                      <Command>
-                        <CommandInput
-                          placeholder='Search category...'
-                          className='h-9'
-                        />
-                        <CommandList>
-                          <CommandEmpty>No category found.</CommandEmpty>
-                          <CommandGroup>
-                            {expenseCategories.map((category) => (
-                              <CommandItem
-                                key={category.id}
-                                value={category.id.toString()}
-                                onSelect={(currentValue) => {
-                                  setValue(
-                                    currentValue === value ? '' : currentValue
-                                  );
-                                  setOpen(false);
-                                }}
-                              >
-                                {category.name}
-                                <Check
-                                  className={cn(
-                                    'ml-auto',
-                                    value === category.id.toString()
-                                      ? 'opacity-100'
-                                      : 'opacity-0'
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <MultiSelect
+                    options={bookCategories?.map((category) => ({
+                      value: category.id.toString(),
+                      label: category.name,
+                    }))}
+                    selected={selectedCategories}
+                    onChange={setSelectedCategories}
+                    placeholder='Choose categories...'
+                  />
                 </div>
-                <div className='flex gap-0 items-center bg-indigo-100 text-indigo-800 px-2 rounded-xs'>
-                  <span className='text-base font-medium'>Payment Mode:</span>
-                  <Select>
-                    <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
-                      <SelectValue placeholder='Select Mode' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Payment Mode</SelectLabel>
-                        {paymentModes.map((mode) => (
-                          <SelectItem key={mode.id} value={mode.id.toString()}>
-                            {mode.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                <div className='flex gap-0 items-center w-fit bg-indigo-100 text-indigo-800 px-2 rounded-xs max-w-[280px]'>
+                  <span className='text-base font-medium'>Pay Mode:</span>
+                  <MultiSelect
+                    options={paymentModes?.map((mode) => ({
+                      value: mode.id.toString(),
+                      label: mode.name,
+                    }))}
+                    selected={selectedPaymentModes}
+                    onChange={setSelectedPaymentModes}
+                    placeholder='Choose...'
+                    showSearch={false}
+                    showActions={false}
+                  />
                 </div>
                 <Button
                   variant='ghost'

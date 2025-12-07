@@ -66,7 +66,7 @@ const ExpenseSchema = z.object({
     .min(1, { message: 'Amount must be greater than 1' }),
   remark: z
     .string()
-    .min(5, { message: 'Remark must be at least 5 characters long.' }),
+    .min(3, { message: 'Remark must be at least 5 characters long.' }),
   date: z.date(),
   category_id: z.string().min(1, 'Category is required'),
   payment_mode_id: z.string().min(1, 'Payment mode is required'),
@@ -155,273 +155,281 @@ const ExpenseForm = () => {
     );
   };
 
-  if (manageCategory) {
-    return <CategoryList setManageCategory={setManageCategory} />;
-  } else {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button className='rounded-xs'>Add New Expense</Button>
-        </DialogTrigger>
-        <DialogContent className='sm:max-w-[425px] rounded-xs'>
-          <DialogHeader>
-            <DialogTitle className='hidden md:block'>
-              Add New Expense
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className='grid gap-3'>
-            <div className='grid gap-3'>
-              <div className='grid gap-2'>
-                <Label htmlFor='date'>Date</Label>
-                <Controller
-                  control={control}
-                  name='date'
-                  render={({ field }) => (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant='outline'
-                          id='date'
-                          className={cn(
-                            'justify-between font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            field.value.toLocaleDateString()
-                          ) : (
-                            <span>Select date</span>
-                          )}
-                          <CalendarDays className='ml-2 h-4 w-4 opacity-50' />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  )}
-                />
-                {errors.date && (
-                  <p className='text-sm text-red-500'>{errors.date.message}</p>
-                )}
-              </div>
-            </div>
-            <div className='grid gap-3'>
-              <div className='grid gap-2'>
-                <Label htmlFor='amount'>Amount</Label>
-                <Input
-                  type='number'
-                  id='amount'
-                  {...register('amount', { valueAsNumber: true })}
-                />
-                {errors.amount && (
-                  <p className='text-sm text-red-500'>
-                    {errors.amount.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className='grid gap-3'>
-              <div className='grid gap-2'>
-                <Label htmlFor='remark'>Remark</Label>
-                <Input id='remark' {...register('remark')} />
-                {errors.remark && (
-                  <p className='text-sm text-red-500'>
-                    {errors.remark.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className='grid gap-3'>
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className='rounded-xs'>Add New Expense</Button>
+      </DialogTrigger>
+      <DialogContent className='sm:max-w-[425px] rounded-xs'>
+        {!manageCategory && (
+          <>
+            <DialogHeader>
+              <DialogTitle className='hidden md:block'>
+                Add New Expense
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(onSubmit)} className='grid gap-3'>
               <div className='grid gap-3'>
-                <div className='flex justify-between items-center'>
-                  <Label htmlFor='category'>Category</Label>
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    onClick={() => setManageCategory(!manageCategory)}
-                    type='button'
-                  >
-                    <Settings className='h-4 w-4 mr-2' />
-                    Manage
-                  </Button>
-                </div>
-                <div className='flex gap-4 justify-between'>
+                <div className='grid gap-2'>
+                  <Label htmlFor='date'>Date</Label>
                   <Controller
                     control={control}
-                    name='category_id'
+                    name='date'
                     render={({ field }) => (
-                      <Popover
-                        open={categoryOpen}
-                        onOpenChange={setCategoryOpen}
-                      >
+                      <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant='outline'
-                            role='combobox'
-                            aria-expanded={categoryOpen}
-                            className='w-[240px] justify-between font-normal'
+                            id='date'
+                            className={cn(
+                              'justify-between font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
                           >
-                            {field.value
-                              ? categories?.find(
-                                  (category) =>
-                                    category.id.toString() === field.value
-                                )?.name
-                              : 'Select Category'}
-                            <ChevronsUpDown className='ml-2 h-4 w-4 opacity-50' />
+                            {field.value ? (
+                              field.value.toLocaleDateString()
+                            ) : (
+                              <span>Select date</span>
+                            )}
+                            <CalendarDays className='ml-2 h-4 w-4 opacity-50' />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className='w-[200px] p-0'>
-                          <Command>
-                            <CommandInput placeholder='Search category...' />
-                            <CommandList>
-                              <CommandEmpty>No category found.</CommandEmpty>
-                              <CommandGroup>
-                                {categories?.map((category) => (
-                                  <CommandItem
-                                    key={category.id}
-                                    value={category.name}
-                                    onSelect={() => {
-                                      setValue(
-                                        'category_id',
-                                        category.id.toString(),
-                                        { shouldValidate: true }
-                                      );
-                                      setCategoryOpen(false);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        'mr-2 h-4 w-4',
-                                        field.value === category.id.toString()
-                                          ? 'opacity-100'
-                                          : 'opacity-0'
-                                      )}
-                                    />
-                                    {category.name}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
+                        <PopoverContent className='w-auto p-0' align='start'>
+                          <Calendar
+                            mode='single'
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date('1900-01-01')
+                            }
+                            initialFocus
+                          />
                         </PopoverContent>
                       </Popover>
                     )}
                   />
-
-                  <Button
-                    variant='outline'
-                    onClick={() => setAddCategoryMode(!addCategoryMode)}
-                    type='button'
-                  >
-                    {addCategoryMode ? (
-                      <>
-                        <X className='h-4 w-4 mr-2' />
-                        Cancel
-                      </>
-                    ) : (
-                      <>
-                        <Plus className='h-4 w-4 mr-2' />
-                        Add New
-                      </>
-                    )}
-                  </Button>
-                </div>
-                {errors.category_id && (
-                  <p className='text-sm text-red-500'>
-                    {errors.category_id.message}
-                  </p>
-                )}
-              </div>
-            </div>
-            {addCategoryMode && (
-              <div className='flex flex-col gap-2'>
-                <div className='flex justify-between items-center gap-4'>
-                  <Input
-                    name='newCategory'
-                    placeholder='New Category Name'
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                  />
-                  <Button
-                    onClick={handleAddCategory}
-                    disabled={isAddingCategory}
-                    type='button'
-                  >
-                    {isAddingCategory && <Spinner />} Save
-                  </Button>
-                </div>
-                {addCategoryError && (
-                  <p className='text-sm text-red-500'>{addCategoryError}</p>
-                )}
-              </div>
-            )}
-            <div className='grid gap-3'>
-              <div className='grid gap-2'>
-                <Label htmlFor='paymentMode'>Payment Mode</Label>
-                <Controller
-                  control={control}
-                  name='payment_mode_id'
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className='w-[240px]'>
-                        <SelectValue placeholder='Select Payment Mode' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Payment Mode</SelectLabel>
-                          {paymentModes?.map((mode) => (
-                            <SelectItem
-                              key={mode.id}
-                              value={mode.id.toString()}
-                            >
-                              {mode.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                  {errors.date && (
+                    <p className='text-sm text-red-500'>
+                      {errors.date.message}
+                    </p>
                   )}
-                />
-                {errors.payment_mode_id && (
-                  <p className='text-sm text-red-500'>
-                    {errors.payment_mode_id.message}
-                  </p>
-                )}
+                </div>
               </div>
-            </div>
-            <div className='flex gap-4 justify-end'>
-              <DialogClose asChild>
-                <Button variant='outline' size='sm' className='rounded-xs'>
-                  Cancel
+              <div className='grid gap-3'>
+                <div className='grid gap-2'>
+                  <Label htmlFor='amount'>Amount</Label>
+                  <Input
+                    type='number'
+                    id='amount'
+                    {...register('amount', { valueAsNumber: true })}
+                  />
+                  {errors.amount && (
+                    <p className='text-sm text-red-500'>
+                      {errors.amount.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className='grid gap-3'>
+                <div className='grid gap-2'>
+                  <Label htmlFor='remark'>Remark</Label>
+                  <Input id='remark' {...register('remark')} />
+                  {errors.remark && (
+                    <p className='text-sm text-red-500'>
+                      {errors.remark.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className='grid gap-3'>
+                <div className='grid gap-3'>
+                  <div className='flex justify-between items-center'>
+                    <Label htmlFor='category'>Category</Label>
+                    <Button
+                      variant='secondary'
+                      size='sm'
+                      onClick={() => setManageCategory(!manageCategory)}
+                      type='button'
+                    >
+                      <Settings className='h-4 w-4 mr-2' />
+                      Manage
+                    </Button>
+                  </div>
+                  <div className='flex gap-4 justify-between'>
+                    <Controller
+                      control={control}
+                      name='category_id'
+                      render={({ field }) => (
+                        <Popover
+                          open={categoryOpen}
+                          onOpenChange={setCategoryOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant='outline'
+                              role='combobox'
+                              aria-expanded={categoryOpen}
+                              className='w-[240px] justify-between font-normal'
+                            >
+                              {field.value
+                                ? categories?.find(
+                                    (category) =>
+                                      category.id.toString() === field.value
+                                  )?.name
+                                : 'Select Category'}
+                              <ChevronsUpDown className='ml-2 h-4 w-4 opacity-50' />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className='w-[200px] p-0 max-h-[200px] overflow-y-auto'>
+                            <Command>
+                              <CommandInput placeholder='Search category...' />
+                              <CommandList>
+                                <CommandEmpty>No category found.</CommandEmpty>
+                                <CommandGroup>
+                                  {categories
+                                    ?.filter((category) => category.is_active)
+                                    .map((category) => (
+                                      <CommandItem
+                                        key={category.id}
+                                        value={category.name}
+                                        onSelect={() => {
+                                          setValue(
+                                            'category_id',
+                                            category.id.toString(),
+                                            { shouldValidate: true }
+                                          );
+                                          setCategoryOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            'mr-2 h-4 w-4',
+                                            field.value ===
+                                              category.id.toString()
+                                              ? 'opacity-100'
+                                              : 'opacity-0'
+                                          )}
+                                        />
+                                        {category.name}
+                                      </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    />
+
+                    <Button
+                      variant='outline'
+                      onClick={() => setAddCategoryMode(!addCategoryMode)}
+                      type='button'
+                    >
+                      {addCategoryMode ? (
+                        <>
+                          <X className='h-4 w-4 mr-2' />
+                          Cancel
+                        </>
+                      ) : (
+                        <>
+                          <Plus className='h-4 w-4 mr-2' />
+                          Add New
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {errors.category_id && (
+                    <p className='text-sm text-red-500'>
+                      {errors.category_id.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {addCategoryMode && (
+                <div className='flex flex-col gap-2'>
+                  <div className='flex justify-between items-center gap-4'>
+                    <Input
+                      name='newCategory'
+                      placeholder='New Category Name'
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                    />
+                    <Button
+                      onClick={handleAddCategory}
+                      disabled={isAddingCategory}
+                      type='button'
+                    >
+                      {isAddingCategory && <Spinner />} Save
+                    </Button>
+                  </div>
+                  {addCategoryError && (
+                    <p className='text-sm text-red-500'>{addCategoryError}</p>
+                  )}
+                </div>
+              )}
+              <div className='grid gap-3'>
+                <div className='grid gap-2'>
+                  <Label htmlFor='paymentMode'>Payment Mode</Label>
+                  <Controller
+                    control={control}
+                    name='payment_mode_id'
+                    render={({ field }) => (
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className='w-[240px]'>
+                          <SelectValue placeholder='Select Payment Mode' />
+                        </SelectTrigger>
+                        <SelectContent className='max-h-[200px] overflow-y-auto'>
+                          <SelectGroup>
+                            <SelectLabel>Payment Mode</SelectLabel>
+                            {paymentModes?.map((mode) => (
+                              <SelectItem
+                                key={mode.id}
+                                value={mode.id.toString()}
+                              >
+                                {mode.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.payment_mode_id && (
+                    <p className='text-sm text-red-500'>
+                      {errors.payment_mode_id.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className='flex gap-4 justify-end'>
+                <DialogClose asChild>
+                  <Button variant='outline' size='sm' className='rounded-xs'>
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button
+                  type='submit'
+                  size='sm'
+                  className='rounded-xs'
+                  disabled={isAddingExpense}
+                >
+                  {isAddingExpense && <Spinner className='mr-2' />}
+                  Add
                 </Button>
-              </DialogClose>
-              <Button
-                type='submit'
-                size='sm'
-                className='rounded-xs'
-                disabled={isAddingExpense}
-              >
-                {isAddingExpense && <Spinner className='mr-2' />}
-                Add
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+              </div>
+            </form>{' '}
+          </>
+        )}
+        {manageCategory && (
+          <CategoryList setManageCategory={setManageCategory} />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default ExpenseForm;
