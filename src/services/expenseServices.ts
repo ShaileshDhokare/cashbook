@@ -149,7 +149,8 @@ export function useExpensesByBook(
 }
 
 // 3. ADD EXPENSE
-export function useAddExpense() {
+export function useAddExpense(bookId: number,
+  userId: string,) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -164,13 +165,15 @@ export function useAddExpense() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
     },
   });
 }
 
 // 4. EDIT EXPENSE
-export function useUpdateExpense() {
+export function useUpdateExpense(bookId: number,
+  userId: string,) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -186,13 +189,15 @@ export function useUpdateExpense() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
     },
   });
 }
 
 // 5. DELETE EXPENSE
-export function useDeleteExpense() {
+export function useDeleteExpense(bookId: number,
+  userId: string,) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -202,7 +207,8 @@ export function useDeleteExpense() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
     },
   });
 }

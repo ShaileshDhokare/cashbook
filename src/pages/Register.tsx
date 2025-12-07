@@ -77,7 +77,6 @@ export default function Register() {
   const onSubmit = async (data: RegisterFormData) => {
     userRegister(data, {
       onSuccess: (data) => {
-        console.log('Logged in!', data);
         setSession(data?.session);
         navigate('/');
       },

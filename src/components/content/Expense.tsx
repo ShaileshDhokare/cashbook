@@ -1,12 +1,31 @@
 import { Button } from '@/components/ui/button';
-import { SquarePen, Trash2 } from 'lucide-react';
 import { Item, ItemContent } from '@/components/ui/item';
+import {
+  useDeleteExpense,
+  type ExpenseWithDetails,
+} from '@/services/expenseServices';
+import { useAuthStore } from '@/store/authStore';
 import {
   getFormattedDate,
   getFormattedTime,
   getRupeeSymbol,
 } from '@/utils/commonUtils';
-import type { ExpenseWithDetails } from '@/services/expenseServices';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '../ui/alert-dialog';
+import { Spinner } from '../ui/spinner';
+import ExpenseForm from './ExpenseForm';
 
 type ExpenseProps = {
   expense: ExpenseWithDetails;
@@ -19,8 +38,16 @@ const Expense = ({
   showActions = true,
   displayDate,
 }: ExpenseProps) => {
-  const { categories, payment_modes, amount, remark, created_at, date } =
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const { id, categories, payment_modes, amount, remark, created_at, date } =
     expense;
+
+  const { bookId } = useParams();
+  const userId = useAuthStore((state: any) => state.userId);
+
+  const { mutate: deleteExpense, isPending: deleteExpensePending } =
+    useDeleteExpense(Number(bookId), userId);
 
   const getExpenseDate = (
     displayDate: 'created_at' | 'date'
@@ -43,6 +70,14 @@ const Expense = ({
     }
   };
 
+  const handleDeleteExpense = () => {
+    deleteExpense(id, {
+      onSuccess: () => {
+        setDeleteDialogOpen(false);
+      },
+    });
+  };
+
   return (
     <Item variant='outline' className='p-2'>
       <ItemContent className='flex flex-col gap-3'>
@@ -57,20 +92,39 @@ const Expense = ({
             </span>
             {showActions && (
               <>
-                <Button
-                  variant='ghost'
-                  className='text-zinc-400 hover:text-zinc-800'
-                  size='icon'
+                <ExpenseForm isEdit expense={expense} />
+                <AlertDialog
+                  open={deleteDialogOpen}
+                  onOpenChange={setDeleteDialogOpen}
                 >
-                  <SquarePen />
-                </Button>
-                <Button
-                  variant='ghost'
-                  className='text-red-400 hover:text-red-800'
-                  size='icon'
-                >
-                  <Trash2 />
-                </Button>
+                  <AlertDialogTrigger>
+                    <Button
+                      variant='ghost'
+                      className='text-red-400 hover:text-red-800'
+                      size='icon'
+                    >
+                      <Trash2 />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete the expense.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteExpense}>
+                        {deleteExpensePending && <Spinner className='mr-2' />}
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </>
             )}
           </div>

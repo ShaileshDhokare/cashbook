@@ -101,6 +101,18 @@ const BookDetail = () => {
     isLoading: totalExpensesOfDurationLoading,
   } = useTotalOfExpenses(Number(bookId), userId, filters);
 
+  const clearAllFilters = () => {
+    setSelectedDuration('this_month');
+    setCustomDuration(undefined);
+    setSearchQuery('');
+    setSelectedCategories([]);
+    setSelectedPaymentModes([]);
+    setAmountQuery({
+      condition: 'gte',
+      amount: 0,
+    });
+  };
+
   return (
     <div className='header-margin pb-5'>
       <div className='container mx-auto h-min-screen'>
@@ -154,6 +166,7 @@ const BookDetail = () => {
                 <Button
                   variant='ghost'
                   className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900 max-w-[120px]'
+                  onClick={clearAllFilters}
                 >
                   <X />
                   Clear

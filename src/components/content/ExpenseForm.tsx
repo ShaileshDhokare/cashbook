@@ -25,7 +25,11 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useAddCategory, useCategories } from '@/services/categoryServices';
-import { useAddExpense } from '@/services/expenseServices';
+import {
+  useAddExpense,
+  useUpdateExpense,
+  type ExpenseWithDetails,
+} from '@/services/expenseServices';
 import { usePaymentModes } from '@/services/paymentModeServices';
 import { useAuthStore } from '@/store/authStore';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,9 +39,10 @@ import {
   ChevronsUpDown,
   Plus,
   Settings,
+  SquarePen,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import * as z from 'zod';
@@ -52,6 +57,7 @@ import {
 } from '../ui/select';
 import { Spinner } from '../ui/spinner';
 import CategoryList from './CategoryList';
+import { format } from 'date-fns';
 
 const CategorySchema = z.object({
   name: z
@@ -74,17 +80,25 @@ const ExpenseSchema = z.object({
 
 type ExpenseFormData = z.infer<typeof ExpenseSchema>;
 
-const ExpenseForm = () => {
+type ExpenseFormProps = {
+  isEdit?: boolean;
+  expense?: ExpenseWithDetails;
+};
+
+const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
   const { bookId } = useParams();
   const userId = useAuthStore((state: any) => state.userId);
-  const { data: categories, isLoading: categoriesLoading } = useCategories(
-    userId,
-    Number(bookId)
-  );
-  const { data: paymentModes, isLoading: paymentModesLoading } =
-    usePaymentModes(userId);
+
+  const { data: categories } = useCategories(userId, Number(bookId));
+  const { data: paymentModes } = usePaymentModes(userId);
   const { mutate: addCategory, isPending: isAddingCategory } = useAddCategory();
-  const { mutate: addExpense, isPending: isAddingExpense } = useAddExpense();
+  const { mutate: addExpense, isPending: isAddingExpense } = useAddExpense(
+    Number(bookId),
+    userId
+  );
+
+  const { mutate: updateExpense, isPending: isUpdatingExpense } =
+    useUpdateExpense(Number(bookId), userId);
 
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [manageCategory, setManageCategory] = useState(false);
@@ -111,6 +125,16 @@ const ExpenseForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (expense) {
+      setValue('amount', expense.amount);
+      setValue('remark', expense.remark);
+      setValue('date', new Date(expense.date));
+      setValue('category_id', expense.category_id.toString());
+      setValue('payment_mode_id', expense.payment_mode_id.toString());
+    }
+  }, [expense]);
+
   const handleAddCategory = () => {
     const validation = CategorySchema.safeParse({ name: newCategoryName });
     if (!validation.success) {
@@ -136,29 +160,58 @@ const ExpenseForm = () => {
   };
 
   const onSubmit = (data: ExpenseFormData) => {
-    addExpense(
-      {
-        amount: Number(data.amount),
-        remark: data.remark,
-        date: data.date.toISOString(),
-        category_id: Number(data.category_id),
-        payment_mode_id: Number(data.payment_mode_id),
-        book_id: Number(bookId),
-        user_id: userId,
-      },
-      {
-        onSuccess: () => {
-          setOpen(false);
-          reset();
+    if (isEdit && expense) {
+      updateExpense(
+        {
+          id: expense.id,
+          amount: Number(data.amount),
+          remark: data.remark,
+          date: format(data.date, 'yyyy-MM-dd'),
+          category_id: Number(data.category_id),
+          payment_mode_id: Number(data.payment_mode_id),
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            setOpen(false);
+            reset();
+          },
+        }
+      );
+    } else {
+      addExpense(
+        {
+          amount: Number(data.amount),
+          remark: data.remark,
+          date: format(data.date, 'yyyy-MM-dd'),
+          category_id: Number(data.category_id),
+          payment_mode_id: Number(data.payment_mode_id),
+          book_id: Number(bookId),
+          user_id: userId,
+        },
+        {
+          onSuccess: () => {
+            setOpen(false);
+            reset();
+          },
+        }
+      );
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='rounded-xs'>Add New Expense</Button>
+        {isEdit ? (
+          <Button
+            variant='ghost'
+            className='text-zinc-400 hover:text-zinc-800'
+            size='icon'
+          >
+            <SquarePen />
+          </Button>
+        ) : (
+          <Button className='rounded-xs'>Add New Expense</Button>
+        )}
       </DialogTrigger>
       <DialogContent className='rounded-xs'>
         {!manageCategory && (
@@ -415,10 +468,11 @@ const ExpenseForm = () => {
                   type='submit'
                   size='sm'
                   className='rounded-xs'
-                  disabled={isAddingExpense}
+                  disabled={isAddingExpense || isUpdatingExpense}
                 >
-                  {isAddingExpense && <Spinner className='mr-2' />}
-                  Add
+                  {isAddingExpense ||
+                    (isUpdatingExpense && <Spinner className='mr-2' />)}
+                  {isEdit ? 'Update' : 'Add'}
                 </Button>
               </div>
             </form>{' '}

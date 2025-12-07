@@ -61,7 +61,7 @@ const BookExpenses = ({
                 key={expense.id}
                 expense={expense}
                 showActions={true}
-                displayDate='created_at'
+                displayDate='date'
               />
             ))
           )}
