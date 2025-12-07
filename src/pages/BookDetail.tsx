@@ -85,11 +85,8 @@ const BookDetail = () => {
   const { data: books } = useBooks(userId);
   const currentBook = books?.find((book: any) => book.id === Number(bookId));
 
-  const {
-    data: BookExpenseData,
-    isLoading: BookExpensesLoading,
-    error: BookExpensesError,
-  } = useExpensesByBook(Number(bookId), userId, filters);
+  const { data: BookExpenseData, isLoading: BookExpensesLoading } =
+    useExpensesByBook(Number(bookId), userId, filters);
 
   const {
     data: totalExpensesOfAllTime,

@@ -48,7 +48,7 @@ const BooksList = () => {
   });
   const [openModal, setOpenModal] = useState<boolean>(false);
 
-  const { data: books, isLoading, isError: booksError } = useBooks(userId);
+  const { data: books, isLoading } = useBooks(userId);
 
   const {
     register,
@@ -64,7 +64,6 @@ const BooksList = () => {
   const {
     mutate,
     isPending,
-    error,
     isError,
     isSuccess,
     data: newBookData,

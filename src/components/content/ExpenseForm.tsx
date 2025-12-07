@@ -151,7 +151,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
         is_active: true,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           setNewCategoryName('');
           setAddCategoryMode(false);
         },

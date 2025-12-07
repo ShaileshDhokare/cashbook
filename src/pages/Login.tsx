@@ -38,7 +38,7 @@ export default function Login() {
 
   const setSession = useAuthStore((state: any) => state.setSession);
   const setError = useAuthStore((state: any) => state.setError);
-  const { mutate: login, isPending, isError, error } = useUserLogin();
+  const { mutate: login, isPending } = useUserLogin();
 
   const {
     register,

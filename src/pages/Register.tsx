@@ -72,7 +72,7 @@ export default function Register() {
   const setSession = useAuthStore((state: any) => state.setSession);
   const setError = useAuthStore((state: any) => state.setError);
 
-  const { mutate: userRegister, isPending, isError, error } = useUserRegister();
+  const { mutate: userRegister, isPending } = useUserRegister();
 
   const onSubmit = async (data: RegisterFormData) => {
     userRegister(data, {
