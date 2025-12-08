@@ -10,6 +10,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
 import MultiSelect from '@/components/ui/multi-select';
 import {
   Select,
@@ -20,19 +21,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { useBooks } from '@/services/bookServices';
+import { useCategories } from '@/services/categoryServices';
 import {
   useExpensesByBook,
   useTotalOfExpenses,
 } from '@/services/expenseServices';
+import { usePaymentModes } from '@/services/paymentModeServices';
 import { useAuthStore } from '@/store/authStore';
 import { getExpensesByDuration, getRupeeSymbol } from '@/utils/commonUtils';
 import type { DateRange, DurationTypes } from '@/utils/types';
 import useDebounce from '@/utils/useDebounce';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useCategories } from '@/services/categoryServices';
-import { usePaymentModes } from '@/services/paymentModeServices';
 
 const BookDetail = () => {
   const [selectedDuration, setSelectedDuration] =
@@ -54,6 +56,7 @@ const BookDetail = () => {
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
     []
   );
+  const [showFilters, setShowFilters] = useState(false);
 
   const { bookId } = useParams();
 
@@ -68,6 +71,7 @@ const BookDetail = () => {
     selectedDuration,
     customDuration
   ) as DateRange;
+
   const filters = {
     startDate,
     endDate,
@@ -117,158 +121,175 @@ const BookDetail = () => {
           <h1 className='text-2xl font-semibold mb-1'>{currentBook?.name}</h1>
           <span className='text-sm'>{currentBook?.description}</span>
         </div>
-        <div>
-          <div className='grid grid-cols-1 lg:grid-cols-9 gap-4'>
-            <div className='col-start-2 col-span-7 bg-white p-4 rounded border'>
-              {selectedDuration === 'custom_range' && (
-                <DurationSelector
-                  selectedDuration={selectedDuration}
-                  setSelectedDuration={setSelectedDuration}
-                  setCustomDuration={setCustomDuration}
+        <div className='mx-2'>
+          <div className='bg-white p-4 rounded border'>
+            <div className='flex justify-end mb-4'>
+              <div className='flex items-center space-x-2'>
+                <Switch
+                  checked={showFilters}
+                  onCheckedChange={setShowFilters}
+                  id='show-filters'
                 />
-              )}
-              <div className='flex flex-col md:flex-row gap-4 mb-4'>
-                {selectedDuration !== 'custom_range' && (
+                <Label htmlFor='show-filters'>Filters</Label>
+              </div>
+            </div>
+            {showFilters && (
+              <div>
+                {selectedDuration === 'custom_range' && (
                   <DurationSelector
                     selectedDuration={selectedDuration}
                     setSelectedDuration={setSelectedDuration}
+                    setCustomDuration={setCustomDuration}
                   />
                 )}
-                <div className='flex gap-0 items-center w-fit bg-purple-100 text-purple-800 px-2 rounded-xs max-w-[280px]'>
-                  <span className='text-base font-medium'>Category:</span>
-                  <MultiSelect
-                    options={bookCategories?.map((category) => ({
-                      value: category.id.toString(),
-                      label: category.name,
-                    }))}
-                    selected={selectedCategories}
-                    onChange={setSelectedCategories}
-                    placeholder='Choose categories...'
-                  />
-                </div>
-                <div className='flex gap-0 items-center w-fit bg-indigo-100 text-indigo-800 px-2 rounded-xs max-w-[280px]'>
-                  <span className='text-base font-medium'>Pay Mode:</span>
-                  <MultiSelect
-                    options={paymentModes?.map((mode) => ({
-                      value: mode.id.toString(),
-                      label: mode.name,
-                    }))}
-                    selected={selectedPaymentModes}
-                    onChange={setSelectedPaymentModes}
-                    placeholder='Choose...'
-                    showSearch={false}
-                    showActions={false}
-                  />
-                </div>
-                <Button
-                  variant='ghost'
-                  className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900 max-w-[120px]'
-                  onClick={clearAllFilters}
-                >
-                  <X />
-                  Clear
-                </Button>
-              </div>
-              <div className='flex sm:flex-row flex-col gap-4 mb-4 justify-between'>
-                <div className='flex gap-4 w-full'>
-                  <InputGroup className='rounded-xs'>
-                    <InputGroupInput
-                      placeholder='Search by remark...'
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                <div className='grid grid-cols-1 md:grid-cols-12 lg:grid-cols-15 gap-4 mb-4'>
+                  {selectedDuration !== 'custom_range' && (
+                    <DurationSelector
+                      selectedDuration={selectedDuration}
+                      setSelectedDuration={setSelectedDuration}
                     />
-                  </InputGroup>
-                  <InputGroup className='rounded-xs'>
-                    <InputGroupAddon align='inline-start'>
-                      <Select
-                        defaultValue='gte'
-                        onValueChange={(value) =>
+                  )}
+                  <div className='col-span-5 lg:col-span-3 flex gap-0 items-center w-fit bg-purple-100 text-purple-800 px-2 rounded-xs max-w-[280px]'>
+                    <span className='text-base font-medium'>Category:</span>
+                    <MultiSelect
+                      options={bookCategories?.map((category) => ({
+                        value: category.id.toString(),
+                        label: category.name,
+                      }))}
+                      selected={selectedCategories}
+                      onChange={setSelectedCategories}
+                      placeholder='Choose categories...'
+                    />
+                  </div>
+                  <div className='col-span-5 lg:col-span-3 flex gap-0 items-center w-fit bg-indigo-100 text-indigo-800 px-2 rounded-xs max-w-[280px]'>
+                    <span className='text-base font-medium'>Pay Mode:</span>
+                    <MultiSelect
+                      options={paymentModes?.map((mode) => ({
+                        value: mode.id.toString(),
+                        label: mode.name,
+                      }))}
+                      selected={selectedPaymentModes}
+                      onChange={setSelectedPaymentModes}
+                      placeholder='Choose...'
+                      showSearch={false}
+                      showActions={false}
+                    />
+                  </div>
+                  <div className='col-span-2 lg:col-span-1'>
+                    <Button
+                      variant='ghost'
+                      className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900 max-w-[120px]'
+                      onClick={clearAllFilters}
+                    >
+                      <X />
+                      Clear
+                    </Button>
+                  </div>
+                </div>
+                <div className='flex sm:flex-row flex-col gap-4 mb-4 justify-between'>
+                  <div className='flex gap-4 w-full'>
+                    <InputGroup className='rounded-xs max-w-[150px] md:max-w-full'>
+                      <InputGroupInput
+                        placeholder='Search by remark...'
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </InputGroup>
+                    <InputGroup className='rounded-xs'>
+                      <InputGroupAddon align='inline-start'>
+                        <Select
+                          defaultValue='gte'
+                          onValueChange={(value) =>
+                            setAmountQuery({
+                              ...amountQuery,
+                              condition: value as 'gte' | 'lte',
+                            })
+                          }
+                        >
+                          <SelectTrigger className='border-0 shadow-none px-1 gap-1 text-base font-medium'>
+                            <SelectValue placeholder='' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem className='font-medium' value='gte'>
+                                Amount <span className='text-lg'> &ge;</span>
+                              </SelectItem>
+                              <SelectItem className='font-medium' value='lte'>
+                                Amount <span className='text-lg'> &le;</span>
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </InputGroupAddon>
+                      <InputGroupInput
+                        type='number'
+                        placeholder='Enter search query'
+                        onChange={(e) =>
                           setAmountQuery({
                             ...amountQuery,
-                            condition: value as 'gte' | 'lte',
+                            amount: Number(e.target.value),
                           })
                         }
-                      >
-                        <SelectTrigger className='border-0 shadow-none px-1 gap-1 text-base font-medium'>
-                          <SelectValue placeholder='' />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem className='font-medium' value='gte'>
-                              Amount <span className='text-lg'> &ge;</span>
-                            </SelectItem>
-                            <SelectItem className='font-medium' value='lte'>
-                              Amount <span className='text-lg'> &le;</span>
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </InputGroupAddon>
-                    <InputGroupInput
-                      type='number'
-                      placeholder='Enter search query'
-                      onChange={(e) =>
-                        setAmountQuery({
-                          ...amountQuery,
-                          amount: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </InputGroup>
+                      />
+                    </InputGroup>
+                  </div>
+                  <ExpenseForm />
                 </div>
+              </div>
+            )}
+            {!showFilters && (
+              <div className='flex justify-end mb-3'>
                 <ExpenseForm />
               </div>
-              <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
-                <div className='col-span-4 flex gap-2 items-center justify-center'>
-                  <div className='flex flex-col align-top h-full'>
-                    <span className='p-2 mt-1 rounded-full border bg-indigo-100 text-indigo-900'>
-                      <Sigma className='w-[25px] h-[25px]' />
-                    </span>
-                  </div>
-                  <div className='flex flex-col'>
-                    <span className='font-medium text-base'>
-                      Selected Period
-                    </span>
-                    {totalExpensesOfDurationLoading ? (
-                      <Loader show={totalExpensesOfDurationLoading} />
-                    ) : (
-                      <h1 className='text-2xl md:text-4xl font-medium'>
-                        {getRupeeSymbol()}
-                        {(totalExpensesOfDuration &&
-                          totalExpensesOfDuration[0]?.sum) ||
-                          0}
-                      </h1>
-                    )}
-                  </div>
+            )}
+            <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
+              <div className='col-span-4 flex gap-2 items-center justify-center'>
+                <div className='flex flex-col align-top h-full'>
+                  <span className='p-2 mt-1 rounded-full border bg-indigo-100 text-indigo-900'>
+                    <Sigma className='w-[25px] h-[25px]' />
+                  </span>
                 </div>
-                <div className='col-span-1 flex justify-center'>
-                  <Separator orientation='vertical' />
-                </div>
-                <div className='col-span-4 flex gap-2 items-center justify-center'>
-                  <div className='flex flex-col align-top h-full'>
-                    <span className='p-2 mt-1 rounded-full border bg-green-100 text-green-900'>
-                      <Equal className='w-[25px] h-[25px]' />
-                    </span>
-                  </div>
-                  <div className='flex flex-col'>
-                    <span className='font-medium text-base'>All Time</span>
-                    {totalExpensesOfAllTimeLoading ? (
-                      <Loader show={totalExpensesOfAllTimeLoading} />
-                    ) : (
-                      <h1 className='text-2xl md:text-4xl font-medium'>
-                        {getRupeeSymbol()}{' '}
-                        {(totalExpensesOfAllTime &&
-                          totalExpensesOfAllTime[0]?.sum) ||
-                          0}
-                      </h1>
-                    )}
-                  </div>
+                <div className='flex flex-col'>
+                  <span className='font-medium text-base'>Selected Period</span>
+                  {totalExpensesOfDurationLoading ? (
+                    <Loader show={totalExpensesOfDurationLoading} />
+                  ) : (
+                    <h1 className='text-2xl md:text-4xl font-medium'>
+                      {getRupeeSymbol()}
+                      {(totalExpensesOfDuration &&
+                        totalExpensesOfDuration[0]?.sum) ||
+                        0}
+                    </h1>
+                  )}
                 </div>
               </div>
-              <BookExpenses
-                expenses={BookExpenseData?.data}
-                isLoading={BookExpensesLoading}
-              />
+              <div className='col-span-1 flex justify-center'>
+                <Separator orientation='vertical' />
+              </div>
+              <div className='col-span-4 flex gap-2 items-center justify-center'>
+                <div className='flex flex-col align-top h-full'>
+                  <span className='p-2 mt-1 rounded-full border bg-green-100 text-green-900'>
+                    <Equal className='w-[25px] h-[25px]' />
+                  </span>
+                </div>
+                <div className='flex flex-col'>
+                  <span className='font-medium text-base'>All Time</span>
+                  {totalExpensesOfAllTimeLoading ? (
+                    <Loader show={totalExpensesOfAllTimeLoading} />
+                  ) : (
+                    <h1 className='text-2xl md:text-4xl font-medium'>
+                      {getRupeeSymbol()}{' '}
+                      {(totalExpensesOfAllTime &&
+                        totalExpensesOfAllTime[0]?.sum) ||
+                        0}
+                    </h1>
+                  )}
+                </div>
+              </div>
             </div>
+            <BookExpenses
+              expenses={BookExpenseData?.data}
+              isLoading={BookExpensesLoading}
+            />
           </div>
         </div>
       </div>

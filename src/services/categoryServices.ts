@@ -11,13 +11,13 @@ export type UpdateCategoryInput = {
 };
 
 export const CATEGORY_KEYS = {
-  all: ['categories'] as const,
+  byBookId: (bookId: number) => ['categories', bookId] as const,
 };
 
 // 1. LIST ALL CATEGORIES
 export function useCategories(user_id: string, book_id: number) {
   return useQuery({
-    queryKey: CATEGORY_KEYS.all,
+    queryKey: CATEGORY_KEYS.byBookId(book_id),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('categories')
@@ -33,7 +33,7 @@ export function useCategories(user_id: string, book_id: number) {
 }
 
 // 2. ADD CATEGORY
-export function useAddCategory() {
+export function useAddCategory(book_id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -48,13 +48,13 @@ export function useAddCategory() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.byBookId(book_id) });
     },
   });
 }
 
 // 3. EDIT CATEGORY
-export function useUpdateCategory() {
+export function useUpdateCategory(book_id: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -74,7 +74,7 @@ export function useUpdateCategory() {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.byBookId(book_id) });
     },
   });
 }

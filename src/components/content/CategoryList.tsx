@@ -15,7 +15,7 @@ const CategoryList = ({ setManageCategory }: CategoryListProps) => {
   const { data: categories } = useCategories(userId, Number(bookId));
 
   const { mutate: updateCategory, isPending: isUpdatingCategory } =
-    useUpdateCategory();
+    useUpdateCategory(Number(bookId));
 
   return (
     <div className='p-3 mt-2'>

@@ -16,16 +16,17 @@ import { useBooksWithTotalExpenses } from '@/services/bookServices';
 import { useAuthStore } from '@/store/authStore';
 import { getRupeeSymbol } from '@/utils/commonUtils';
 import { Link } from 'react-router-dom';
+import Loader from './Loader';
 
 const Books = () => {
   const userId = useAuthStore((state: any) => {
     return state.userId;
   });
 
-  const { data: books } = useBooksWithTotalExpenses(userId);
+  const { data: books, isLoading } = useBooksWithTotalExpenses(userId);
 
   return (
-    <Card>
+    <Card className='h-fit'>
       <CardHeader>
         <CardTitle className='text-xl'>Books</CardTitle>
       </CardHeader>
@@ -60,6 +61,7 @@ const Books = () => {
               </ItemContent>
             </Item>
           ))}
+          {isLoading && <Loader show={isLoading} />}
         </div>
       </CardContent>
       <CardFooter className='flex justify-center'>

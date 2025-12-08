@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   return (
-    <section className='flex flex-col md:flex-row items-center justify-between px-6 py-16 max-w-6xl mx-auto'>
+    <section className='flex flex-col md:flex-row items-center justify-between px-6 py-6 max-w-6xl mx-auto'>
       <div className='flex-1 space-y-5'>
         <h1 className='text-4xl font-bold leading-tight text-gray-900'>
           Cashbook: Your <br /> Personal Expense Tracker

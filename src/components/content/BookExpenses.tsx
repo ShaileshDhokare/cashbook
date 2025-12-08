@@ -20,12 +20,12 @@ const BookExpenses = ({
 }) => {
   return (
     <div>
-      <div className='flex items-center justify-between mb-3 px-3'>
-        <div className='text-sm font-medium'>
+      <div className='flex flex-col md:flex-row gap-3 items-center justify-between mb-3'>
+        <div className='text-sm font-medium w-full'>
           <span>Showing 1-25 of 100 entries</span>
         </div>
-        <div className='flex w-full items-center gap-3 lg:w-fit'>
-          <div className='flex w-fit items-center justify-center gap-2 text-sm font-medium'>
+        <div className='flex w-full justify-end items-center gap-3'>
+          <div className='flex items-center justify-center gap-2 text-sm font-medium'>
             <span>Page</span>
             <Select defaultValue='1'>
               <SelectTrigger className='w-fit rounded-sm' id='rows-per-page'>

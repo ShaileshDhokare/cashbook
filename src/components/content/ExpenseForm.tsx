@@ -91,7 +91,9 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
 
   const { data: categories } = useCategories(userId, Number(bookId));
   const { data: paymentModes } = usePaymentModes(userId);
-  const { mutate: addCategory, isPending: isAddingCategory } = useAddCategory();
+  const { mutate: addCategory, isPending: isAddingCategory } = useAddCategory(
+    Number(bookId)
+  );
   const { mutate: addExpense, isPending: isAddingExpense } = useAddExpense(
     Number(bookId),
     userId

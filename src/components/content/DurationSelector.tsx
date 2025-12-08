@@ -42,93 +42,101 @@ const DurationSelector = ({
   if (selectedDuration === 'custom_range') {
     return (
       <div className='flex gap-4 mb-4'>
-        <div className='flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs'>
-          <span className='text-base font-medium'>Duration:</span>
-          <Select
-            defaultValue='this_month'
-            onValueChange={(value: DurationTypes) => setSelectedDuration(value)}
-            value={selectedDuration}
-          >
-            <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Duration</SelectLabel>
-                <SelectItem value='this_month'>This Month</SelectItem>
-                <SelectItem value='last_month'>Last Month</SelectItem>
-                <SelectItem value='this_year'>This Year</SelectItem>
-                <SelectItem value='all_time'>All Time</SelectItem>
-                <SelectItem value='custom_range'>Custom Range</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <span className='text-base font-medium mx-2'>From:</span>
-          <Popover open={fromDateOpen} onOpenChange={setFromDateOpen}>
-            <PopoverTrigger
-              asChild
-              className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
+        <div className='flex flex-col md:flex-row gap-0 bg-slate-100 text-slate-800 px-2 rounded-xs'>
+          <div className='flex gap-0 items-center'>
+            <span className='text-base font-medium'>Duration:</span>
+            <Select
+              defaultValue='this_month'
+              onValueChange={(value: DurationTypes) =>
+                setSelectedDuration(value)
+              }
+              value={selectedDuration}
             >
-              <Button
-                variant='outline'
-                id='date'
-                className='justify-between font-normal'
+              <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Duration</SelectLabel>
+                  <SelectItem value='this_month'>This Month</SelectItem>
+                  <SelectItem value='last_month'>Last Month</SelectItem>
+                  <SelectItem value='this_year'>This Year</SelectItem>
+                  <SelectItem value='all_time'>All Time</SelectItem>
+                  <SelectItem value='custom_range'>Custom Range</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className='flex gap-0 items-center'>
+            <span className='text-base font-medium mx-2'>From:</span>
+            <Popover open={fromDateOpen} onOpenChange={setFromDateOpen}>
+              <PopoverTrigger
+                asChild
+                className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
               >
-                {fromDate ? fromDate.toLocaleDateString() : 'Select date'}
-                <CalendarDays />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className='w-auto overflow-hidden p-0'
-              align='start'
-            >
-              <Calendar
-                mode='single'
-                selected={fromDate}
-                captionLayout='dropdown'
-                onSelect={(date) => {
-                  setFromDate(date);
-                  setFromDateOpen(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-          <span className='text-base font-medium mx-2'>To:</span>
-          <Popover open={toDateOpen} onOpenChange={setToDateOpen}>
-            <PopoverTrigger
-              asChild
-              className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
-            >
-              <Button
-                variant='outline'
-                id='date'
-                className='justify-between font-normal'
+                <Button
+                  variant='outline'
+                  id='date'
+                  className='justify-between font-normal'
+                >
+                  {fromDate ? fromDate.toLocaleDateString() : 'Select date'}
+                  <CalendarDays />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className='w-auto overflow-hidden p-0'
+                align='start'
               >
-                {toDate ? toDate.toLocaleDateString() : 'Select date'}
-                <CalendarDays />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className='w-auto overflow-hidden p-0'
-              align='start'
-            >
-              <Calendar
-                mode='single'
-                selected={toDate}
-                captionLayout='dropdown'
-                onSelect={(date) => {
-                  setToDate(date);
-                  setToDateOpen(false);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
+                <Calendar
+                  mode='single'
+                  selected={fromDate}
+                  captionLayout='dropdown'
+                  onSelect={(date) => {
+                    setFromDate(date);
+                    setFromDateOpen(false);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className='flex gap-0 items-center'>
+            <span className='text-base font-medium mx-2'>To:</span>
+            <Popover open={toDateOpen} onOpenChange={setToDateOpen}>
+              <PopoverTrigger
+                asChild
+                className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
+              >
+                <Button
+                  variant='outline'
+                  id='date'
+                  className='justify-between font-normal'
+                >
+                  {toDate ? toDate.toLocaleDateString() : 'Select date'}
+                  <CalendarDays />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className='w-auto overflow-hidden p-0'
+                align='start'
+              >
+                <Calendar
+                  mode='single'
+                  selected={toDate}
+                  captionLayout='dropdown'
+                  onSelect={(date) => {
+                    setToDate(date);
+                    setToDateOpen(false);
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
     );
   }
   return (
-    <div className='flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs'>
+    <div className='col-span-4 lg:col-span-2 flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs max-w-[200px]'>
       <span className='text-base font-medium'>Duration:</span>
       <Select
         defaultValue='this_month'

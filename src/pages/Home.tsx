@@ -4,8 +4,8 @@ import { BookOpen, PieChart, ClipboardList } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className='bg-gray-50 pb-10'>
-      <div className='mt-16'>
+    <div className='pb-10'>
+      <div className='header-margin'>
         <HeroSection />
 
         <section className='px-6 py-16 max-w-6xl mx-auto'>
