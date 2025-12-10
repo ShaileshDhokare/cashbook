@@ -10,6 +10,7 @@ import {
 import Expense from './Expense';
 import type { ExpenseWithDetails } from '@/services/expenseServices';
 import Loader from './Loader';
+import { ScrollArea } from '../ui/scroll-area';
 
 const BookExpenses = ({
   expenses,
@@ -52,20 +53,22 @@ const BookExpenses = ({
         </div>
       </div>
       <div className='rounded-sm'>
-        <div className='flex flex-col gap-3'>
-          {isLoading ? (
-            <Loader show={isLoading} />
-          ) : (
-            expenses?.map((expense) => (
-              <Expense
-                key={expense.id}
-                expense={expense}
-                showActions={true}
-                displayDate='date'
-              />
-            ))
-          )}
-        </div>
+        <ScrollArea className='h-[500px] md:h-[700px] w-full p-5'>
+          <div className='flex flex-col gap-3'>
+            {isLoading ? (
+              <Loader show={isLoading} />
+            ) : (
+              expenses?.map((expense) => (
+                <Expense
+                  key={expense.id}
+                  expense={expense}
+                  showActions={true}
+                  displayDate='date'
+                />
+              ))
+            )}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );

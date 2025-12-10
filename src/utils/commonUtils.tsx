@@ -7,7 +7,8 @@ import {
   endOfYear,
   format,
 } from 'date-fns';
-import type { DateRange, DurationTypes } from './types';
+import type { AnalysisChartResponse, DateRange, DurationTypes } from './types';
+import type { ChartConfig } from '@/components/ui/chart';
 
 export function getRupeeSymbol(): React.ReactElement {
   return <span>&#x20B9;</span>;
@@ -99,4 +100,73 @@ export const getExpensesByDuration = (
         customDuration?.endDate!
       );
   }
+};
+
+export const CHART_COLOR_PALETTE: readonly string[] = [
+  '#1D4ED8', // Blue-700 (theme)
+  '#0891B2', // Cyan-600
+  '#8B5CF6', // Purple-500
+  '#14B8A6', // Teal-500
+  '#6366F1', // Indigo-500
+  '#22C55E', // Green-500
+  '#0EA5E9', // Sky-500
+  '#7C3AED', // Violet-500
+  '#60A5FA', // Blue-400
+  '#059669', // Emerald-600
+  '#9CA3AF', // Gray-400
+  '#A78BFA', // Indigo-400
+  '#10B981', // Emerald-500
+  '#64748B', // Slate-500
+  '#84CC16', // Lime-500
+  '#F59E0B', // Amber-500
+  '#CBAA04', // Yellow-600
+  '#EF4444', // Red-500
+  '#D946EF', // Fuchsia-500
+  '#F97316', // Orange-500
+  '#EC4899', // Pink-500
+];
+
+export const getShortMonthName = (monthNumber: number): string => {
+  const date = new Date(2000, monthNumber - 1, 1);
+  return format(date, 'MMM');
+};
+
+export const buildChartData = (
+  data: AnalysisChartResponse[] | undefined,
+  dataKey: 'book_name' | 'category_name'
+): any[] => {
+  const chartDataMap = data?.reduce((acc: any, row: AnalysisChartResponse) => {
+    const monthKey = row.month_number;
+    if (!acc[monthKey]) {
+      acc[monthKey] = {
+        month: `${getShortMonthName(row.month_number)} ${row.year_number}`,
+      };
+    }
+    const key = row[dataKey];
+    if (key) {
+      acc[monthKey][key] = row.total_expense;
+    }
+    return acc;
+  }, {});
+
+  return Object.values(chartDataMap ?? {}) || [];
+};
+
+export const getAnalysisChartConfig = (
+  data: AnalysisChartResponse[],
+  dataKey: 'book_name' | 'category_name'
+): ChartConfig => {
+  const uniqueBooks = new Set(data?.map((item) => item[dataKey]));
+  return Object.fromEntries(
+    Array.from(uniqueBooks).map((bookName) => [
+      bookName,
+      {
+        label: bookName,
+        color:
+          CHART_COLOR_PALETTE[
+            Math.floor(Math.random() * CHART_COLOR_PALETTE.length)
+          ],
+      },
+    ])
+  );
 };

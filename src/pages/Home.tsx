@@ -1,6 +1,6 @@
-import { HeroSection } from '@/components/content/HeroSection';
 import { FeatureCard } from '@/components/content/FeatureCard';
-import { BookOpen, PieChart, ClipboardList } from 'lucide-react';
+import { HeroSection } from '@/components/content/HeroSection';
+import { BookOpen, ClipboardList, PieChart } from 'lucide-react';
 
 export default function Home() {
   return (

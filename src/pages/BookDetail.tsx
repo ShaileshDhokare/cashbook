@@ -22,7 +22,10 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { useBooks } from '@/services/bookServices';
+import {
+  useBooks,
+  useMonthlyBookExpensesSummaryByCategory,
+} from '@/services/bookServices';
 import { useCategories } from '@/services/categoryServices';
 import {
   useExpensesByBook,
@@ -35,6 +38,7 @@ import type { DateRange, DurationTypes } from '@/utils/types';
 import useDebounce from '@/utils/useDebounce';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AnalysisChart from '@/components/content/AnalysisChart';
 
 const BookDetail = () => {
   const [selectedDuration, setSelectedDuration] =
@@ -101,6 +105,11 @@ const BookDetail = () => {
     data: totalExpensesOfDuration,
     isLoading: totalExpensesOfDurationLoading,
   } = useTotalOfExpenses(Number(bookId), userId, filters);
+
+  const {
+    data: monthlyBookExpensesSummaryByCategory,
+    isLoading: monthlyBookExpensesSummaryByCategoryLoading,
+  } = useMonthlyBookExpensesSummaryByCategory(userId, Number(bookId));
 
   const clearAllFilters = () => {
     setSelectedDuration('this_month');
@@ -291,6 +300,15 @@ const BookDetail = () => {
               isLoading={BookExpensesLoading}
             />
           </div>
+        </div>
+        <div className='mt-4 px-6'>
+          <AnalysisChart
+            data={monthlyBookExpensesSummaryByCategory}
+            isLoading={monthlyBookExpensesSummaryByCategoryLoading}
+            chartTitle='Monthly Expenses By Category'
+            chartDescription='Monthly Expenses By Category in last 12 months'
+            dataKey='category_name'
+          />
         </div>
       </div>
     </div>

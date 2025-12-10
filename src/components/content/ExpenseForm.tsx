@@ -119,7 +119,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
   } = useForm<ExpenseFormData>({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: {
-      amount: 0,
+      amount: undefined,
       remark: '',
       date: new Date(),
       category_id: '',

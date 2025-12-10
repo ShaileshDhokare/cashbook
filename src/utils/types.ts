@@ -64,3 +64,13 @@ export type DurationTypes =
   | 'this_year'
   | 'all_time'
   | 'custom_range';
+
+export type AnalysisChartResponse = {
+  book_id?: number;
+  category_id?: number;
+  book_name?: string;
+  category_name?: string;
+  year_number: number;
+  month_number: number;
+  total_expense: number;
+};

@@ -1,4 +1,4 @@
-import type { Book, BookWithExpenseSummary } from './../utils/types';
+import type { AnalysisChartResponse, Book, BookWithExpenseSummary } from './../utils/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 
@@ -15,6 +15,8 @@ export const BOOK_KEYS = {
   all: ['books'] as const,
   allWithTotalExpenses: ['books', 'totalExpenses'] as const,
   detail: (id: number) => ['books', id] as const,
+  expenseSummaryOfBooks: ['books', 'expenseSummary'] as const,
+  monthlyBookExpensesSummaryByCategory: (bookId: number) => ['books', 'monthlyBookExpensesSummaryByCategory', bookId] as const,
 };
 
 // 1. LIST ALL BOOKS
@@ -88,6 +90,37 @@ export function useBooksWithTotalExpenses(userId: string) {
 
       if (error) throw error;
       return data as BookWithExpenseSummary[];
+    },
+  });
+}
+
+// 5. GET expense summary of a book of last 12 months
+export function useExpenseSummaryOfBooks(userId: string) {
+  return useQuery({
+    queryKey: BOOK_KEYS.expenseSummaryOfBooks,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_last_year_book_expenses', {
+        userid: userId,
+      });
+
+      if (error) throw error;
+      return data as AnalysisChartResponse[];
+    },
+  });
+}
+
+// 5. GET expense summary of a book by category of last 12 months
+export function useMonthlyBookExpensesSummaryByCategory(userId: string, bookId: number) {
+  return useQuery({
+    queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_monthly_book_expenses_summary_by_category', {
+        userid: userId,
+        bookid: bookId,
+      });
+
+      if (error) throw error;
+      return data as AnalysisChartResponse[];
     },
   });
 }

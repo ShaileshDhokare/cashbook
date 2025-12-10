@@ -37,7 +37,7 @@ export default function Header({ logoutUser }: HeaderProps) {
           </div>
         </div>
         <div className='md:col-span-6'>
-          <div className='flex justify-between items-center'>
+          <div className='flex h-full justify-between items-center'>
             {userProfile && (
               <NavigationMenu>
                 <NavigationMenuList className='flex-wrap'>

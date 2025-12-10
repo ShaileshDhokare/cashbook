@@ -6,6 +6,7 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
+import { BOOK_KEYS } from './bookServices';
 
 export type CreateExpenseInput = Omit<Expense, 'id' | 'created_at'>;
 
@@ -167,6 +168,7 @@ export function useAddExpense(bookId: number,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
     },
   });
 }
@@ -191,6 +193,7 @@ export function useUpdateExpense(bookId: number,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
     },
   });
 }
@@ -209,6 +212,7 @@ export function useDeleteExpense(bookId: number,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
       queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
+      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
     },
   });
 }

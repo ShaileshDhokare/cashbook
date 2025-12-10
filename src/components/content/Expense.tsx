@@ -82,11 +82,11 @@ const Expense = ({
     <Item variant='outline' className='p-2'>
       <ItemContent className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
-          <div className='text-base font-medium'>
+          <div className='text-base font-semibold md:font-medium '>
             <span>{remark}</span>
           </div>
           <div className='flex items-center gap-1'>
-            <span className='text-lg font-medium mr-4'>
+            <span className='text-lg font-semibold md:font-medium mr-4 '>
               {getRupeeSymbol()}
               {amount}
             </span>
