@@ -18,7 +18,7 @@ const TopExpenses = () => {
       <CardHeader>
         <CardTitle className='text-xl'>Top Expenses in November 2025</CardTitle>
       </CardHeader>
-      <CardContent className='px-4'>
+      <CardContent>
         <ScrollArea className='h-[500px] w-full px-3'>
           <div className='flex flex-col gap-3'>
             {topExpensesLoading ? (

@@ -19,7 +19,7 @@ const Dashboard = () => {
             <Books />
             <TopExpenses />
           </div>
-          <div className='mt-3'>
+          <div className='mt-4 px-4'>
             <AnalysisChart
               data={expenseSummaryOfBooks}
               isLoading={isLoading}

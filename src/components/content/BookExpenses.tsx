@@ -53,7 +53,7 @@ const BookExpenses = ({
         </div>
       </div>
       <div className='rounded-sm'>
-        <ScrollArea className='h-[500px] md:h-[700px] w-full p-5'>
+        <ScrollArea className='h-[500px] md:h-[700px] w-full px-3'>
           <div className='flex flex-col gap-3'>
             {isLoading ? (
               <Loader show={isLoading} />
