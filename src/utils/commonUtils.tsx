@@ -170,3 +170,16 @@ export const getAnalysisChartConfig = (
     ])
   );
 };
+
+export const getYAxisRange = (data: any[]) => {
+  const maxExpense = Math.max(
+    ...data.map((item) => {
+      delete item.month;
+      return Object.values(item).reduce(
+        (sum: number, val) => sum + (typeof val === 'number' ? val : 0),
+        0
+      );
+    })
+  );
+  return [0, maxExpense + (10000 - (maxExpense % 10000) + 5000)];
+};

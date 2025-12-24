@@ -13,7 +13,8 @@ import Register from './pages/Register';
 import { supabase } from './supabaseClient';
 import { useAuthStore } from './store/authStore';
 import ProtectedRoute from './components/ProtectedRoute';
-import Loader from './components/content/Loader';
+import { Spinner } from './components/ui/spinner';
+import { Toaster } from './components/ui/sonner';
 
 function App() {
   const setSession = useAuthStore((state: any) => state.setSession);
@@ -48,7 +49,11 @@ function App() {
   }, []);
 
   if (isLoadingSession) {
-    return <Loader show={isLoadingSession} />;
+    return (
+      <div className='flex justify-center items-center w-screen h-screen'>
+        <Spinner className='size-12' />
+      </div>
+    );
   }
 
   const logoutUser = async () => {
@@ -63,6 +68,7 @@ function App() {
   return (
     <>
       <Header logoutUser={logoutUser} />
+      <Toaster richColors position='top-center' />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />

@@ -21,7 +21,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { buildChartData, getAnalysisChartConfig } from '@/utils/commonUtils';
+import {
+  buildChartData,
+  getAnalysisChartConfig,
+  getYAxisRange,
+} from '@/utils/commonUtils';
 import Loader from './Loader';
 
 type AnalysisChartProps = {
@@ -40,6 +44,7 @@ export default function AnalysisChart({
   isLoading,
 }: AnalysisChartProps) {
   const chartData = buildChartData(data, dataKey);
+  const yAxisRange = getYAxisRange(chartData);
   const chartConfig = getAnalysisChartConfig(data, dataKey);
   return (
     <Card className='w-full'>
@@ -61,7 +66,7 @@ export default function AnalysisChart({
               style={{ minWidth: '500px', maxWidth: '900px' }}
             >
               <CartesianGrid vertical={false} />
-              <YAxis />
+              <YAxis type='number' domain={yAxisRange} />
               <XAxis
                 dataKey='month'
                 tickLine={false}
@@ -78,14 +83,14 @@ export default function AnalysisChart({
                       dataKey={key}
                       stackId='a'
                       fill={value.color}
-                      barSize={25}
+                      barSize={30}
                     >
                       <LabelList
                         position='top'
-                        offset={8}
+                        offset={10}
                         orientation='horizontal'
                         className='fill-foreground font-medium'
-                        fontSize={12}
+                        fontSize={15}
                       />
                     </Bar>
                   );
@@ -96,7 +101,7 @@ export default function AnalysisChart({
                     dataKey={key}
                     stackId='a'
                     fill={value.color}
-                    barSize={25}
+                    barSize={30}
                   />
                 );
               })}

@@ -17,6 +17,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { useUserLogin } from '@/services/authServices';
+import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -38,6 +39,14 @@ export default function Login() {
 
   const setSession = useAuthStore((state: any) => state.setSession);
   const setError = useAuthStore((state: any) => state.setError);
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+
+  if (userId) {
+    navigate('/dashboard');
+  }
+
   const { mutate: login, isPending } = useUserLogin();
 
   const {
@@ -57,6 +66,9 @@ export default function Login() {
         navigate('/dashboard');
       },
       onError: (error) => {
+        toast.error('An error occurred during login.', {
+          description: error.message,
+        });
         setError(error);
       },
     });

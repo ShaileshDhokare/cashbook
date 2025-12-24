@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useTopExpenses } from '@/services/expenseServices';
 import Loader from './Loader';
 import { ScrollArea } from '../ui/scroll-area';
+import { format } from 'date-fns';
 
 const TopExpenses = () => {
   const userId = useAuthStore((state: any) => {
@@ -16,9 +17,11 @@ const TopExpenses = () => {
   return (
     <Card className='h-fit'>
       <CardHeader>
-        <CardTitle className='text-xl'>Top Expenses in November 2025</CardTitle>
+        <CardTitle className='text-xl'>
+          Top Expenses in {format(new Date(), 'MMMM yyyy')}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className='px-0'>
         <ScrollArea className='h-[500px] w-full px-3'>
           <div className='flex flex-col gap-3'>
             {topExpensesLoading ? (

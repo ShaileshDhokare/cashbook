@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { supabase } from '../supabaseClient';
 import { BOOK_KEYS } from './bookServices';
+import { getCurrentMonthDateRange } from '@/utils/commonUtils';
 
 export type CreateExpenseInput = Omit<Expense, 'id' | 'created_at'>;
 
@@ -150,8 +151,7 @@ export function useExpensesByBook(
 }
 
 // 3. ADD EXPENSE
-export function useAddExpense(bookId: number,
-  userId: string,) {
+export function useAddExpense(bookId: number, userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -166,16 +166,21 @@ export function useAddExpense(bookId: number,
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.total(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId),
+      });
     },
   });
 }
 
 // 4. EDIT EXPENSE
-export function useUpdateExpense(bookId: number,
-  userId: string,) {
+export function useUpdateExpense(bookId: number, userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -191,16 +196,21 @@ export function useUpdateExpense(bookId: number,
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.total(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId),
+      });
     },
   });
 }
 
 // 5. DELETE EXPENSE
-export function useDeleteExpense(bookId: number,
-  userId: string,) {
+export function useDeleteExpense(bookId: number, userId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -210,9 +220,15 @@ export function useDeleteExpense(bookId: number,
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: EXPENSE_KEYS.total(bookId, userId, {}) });
-      queryClient.invalidateQueries({ queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId) });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.byBook(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: EXPENSE_KEYS.total(bookId, userId, {}),
+      });
+      queryClient.invalidateQueries({
+        queryKey: BOOK_KEYS.monthlyBookExpensesSummaryByCategory(bookId),
+      });
     },
   });
 }
@@ -244,6 +260,7 @@ export function useTotalOfExpenses(
 
 // 7. GET TOP 10 expenses
 export function useTopExpenses(userId: string) {
+  const { startDate, endDate } = getCurrentMonthDateRange();
   return useQuery({
     queryKey: EXPENSE_KEYS.top(userId),
     queryFn: async () => {
@@ -253,6 +270,8 @@ export function useTopExpenses(userId: string) {
           count: 'exact',
         })
         .eq('user_id', userId)
+        .gte('date', startDate)
+        .lte('date', endDate)
         .order('amount', { ascending: false })
         .limit(10);
       if (error) throw error;

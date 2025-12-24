@@ -1,8 +1,18 @@
 import { FeatureCard } from '@/components/content/FeatureCard';
 import { HeroSection } from '@/components/content/HeroSection';
+import { useAuthStore } from '@/store/authStore';
 import { BookOpen, ClipboardList, PieChart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const userId = useAuthStore((state: any) => {
+    return state.userId;
+  });
+
+  if (userId) {
+    navigate('/dashboard');
+  }
   return (
     <div className='pb-10'>
       <div className='header-margin'>
