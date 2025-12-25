@@ -47,7 +47,7 @@ const BookDetail = () => {
     startDate: Date | undefined;
     endDate: Date | undefined;
   }>();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [amountQuery, setAmountQuery] = useState<{
     condition: 'gte' | 'lte';
     amount: number;
@@ -60,7 +60,8 @@ const BookDetail = () => {
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
     []
   );
-  const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const { bookId } = useParams();
 
@@ -88,6 +89,7 @@ const BookDetail = () => {
       condition: amountQuery.condition,
       amount: useDebounce(amountQuery.amount, 1500),
     },
+    page: useDebounce(currentPage, 1000),
   };
 
   const { data: books } = useBooks(userId);
@@ -131,7 +133,7 @@ const BookDetail = () => {
           <span className='text-sm'>{currentBook?.description}</span>
         </div>
         <div className='mx-2'>
-          <div className='bg-white p-4 rounded border'>
+          <div className='bg-white p-2 rounded border'>
             <div className='flex justify-end mb-4'>
               <div className='flex items-center space-x-2'>
                 <Switch
@@ -258,7 +260,11 @@ const BookDetail = () => {
                   </span>
                 </div>
                 <div className='flex flex-col'>
-                  <span className='font-medium text-base'>Selected Period</span>
+                  <span className='font-medium text-base'>
+                    {selectedDuration === 'this_month'
+                      ? 'This Month'
+                      : 'Selected Period'}
+                  </span>
                   {totalExpensesOfDurationLoading ? (
                     <Loader show={totalExpensesOfDurationLoading} />
                   ) : (
@@ -298,10 +304,12 @@ const BookDetail = () => {
             <BookExpenses
               expenses={BookExpenseData?.data}
               isLoading={BookExpensesLoading}
+              paginationData={BookExpenseData?.meta}
+              setCurrentPage={setCurrentPage}
             />
           </div>
         </div>
-        <div className='mt-4 px-6'>
+        <div className='mt-4 px-2'>
           <AnalysisChart
             data={monthlyBookExpensesSummaryByCategory}
             isLoading={monthlyBookExpensesSummaryByCategoryLoading}

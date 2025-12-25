@@ -204,13 +204,9 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {isEdit ? (
-          <Button
-            variant='ghost'
-            className='text-zinc-400 hover:text-zinc-800'
-            size='icon'
-          >
-            <SquarePen />
-          </Button>
+          <span className='text-zinc-400 hover:text-zinc-800'>
+            <SquarePen className='w-5' />
+          </span>
         ) : (
           <Button className='rounded-xs'>Add New Expense</Button>
         )}

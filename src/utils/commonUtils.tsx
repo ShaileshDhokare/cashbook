@@ -9,6 +9,7 @@ import {
 } from 'date-fns';
 import type { AnalysisChartResponse, DateRange, DurationTypes } from './types';
 import type { ChartConfig } from '@/components/ui/chart';
+import type { ExpenseWithDetails } from '@/services/expenseServices';
 
 export function getRupeeSymbol(): React.ReactElement {
   return <span>&#x20B9;</span>;
@@ -136,10 +137,12 @@ export const buildChartData = (
   dataKey: 'book_name' | 'category_name'
 ): any[] => {
   const chartDataMap = data?.reduce((acc: any, row: AnalysisChartResponse) => {
-    const monthKey = row.month_number;
+    const monthKey = `${getShortMonthName(row.month_number)} ${
+      row.year_number
+    }`;
     if (!acc[monthKey]) {
       acc[monthKey] = {
-        month: `${getShortMonthName(row.month_number)} ${row.year_number}`,
+        month: monthKey,
       };
     }
     const key = row[dataKey];
@@ -174,12 +177,37 @@ export const getAnalysisChartConfig = (
 export const getYAxisRange = (data: any[]) => {
   const maxExpense = Math.max(
     ...data.map((item) => {
-      delete item.month;
       return Object.values(item).reduce(
         (sum: number, val) => sum + (typeof val === 'number' ? val : 0),
         0
       );
     })
   );
-  return [0, maxExpense + (10000 - (maxExpense % 10000) + 5000)];
+  return [0, maxExpense + (5000 - (maxExpense % 5000) + 5000)];
+};
+
+export const getUserInitials = (userProfile: any): string => {
+  if (!userProfile) return '';
+  const { firstName, lastName } = userProfile;
+  return `${firstName?.charAt(0) || ''}${
+    lastName?.charAt(0) || ''
+  }`.toUpperCase();
+};
+
+export const groupExpensesByDate = (
+  expenses: ExpenseWithDetails[] | []
+): { date: string; expenses: ExpenseWithDetails[] }[] => {
+  const grouped: Record<string, any[]> = {};
+
+  for (const expense of expenses) {
+    if (!grouped[expense.date]) {
+      grouped[expense.date] = [];
+    }
+    grouped[expense.date].push(expense);
+  }
+
+  return Object.entries(grouped).map(([date, expenses]) => ({
+    date,
+    expenses,
+  }));
 };

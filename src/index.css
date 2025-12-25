@@ -122,9 +122,3 @@
 .header-margin {
   margin-top: 70px;
 }
-
-@media (max-width: 470px) {
-  .header-margin {
-    margin-top: 125px;
-  }
-}

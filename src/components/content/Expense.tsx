@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { Item, ItemContent } from '@/components/ui/item';
 import {
   useDeleteExpense,
@@ -85,8 +84,8 @@ const Expense = ({
           <div className='text-base font-semibold md:font-medium '>
             <span>{remark}</span>
           </div>
-          <div className='flex items-center gap-1'>
-            <span className='text-lg font-semibold md:font-medium mr-4 '>
+          <div className='flex items-center gap-4'>
+            <span className='text-lg font-semibold md:font-medium mr-2 '>
               {getRupeeSymbol()}
               {amount}
             </span>
@@ -98,13 +97,9 @@ const Expense = ({
                   onOpenChange={setDeleteDialogOpen}
                 >
                   <AlertDialogTrigger>
-                    <Button
-                      variant='ghost'
-                      className='text-red-400 hover:text-red-800'
-                      size='icon'
-                    >
-                      <Trash2 />
-                    </Button>
+                    <span className='text-red-400 hover:text-red-800'>
+                      <Trash2 className='w-5' />
+                    </span>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>

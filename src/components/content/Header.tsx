@@ -14,6 +14,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Menu, CircleUserRound } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import { getUserInitials } from '@/utils/commonUtils';
 
 type HeaderProps = {
   userProfile?: any;
@@ -24,7 +25,7 @@ export default function Header({ logoutUser }: HeaderProps) {
   const userProfile = useAuthStore((state: any) => state.user);
 
   return (
-    <header className='fixed top-0 left-0 right-0 z-50 w-full px-6 py-3 md:py-2 shadow-md bg-gray-100 border-b border-gray-200'>
+    <header className='fixed top-0 left-0 right-0 z-50 w-full px-4 py-2 shadow-md bg-gray-100 border-b border-gray-200'>
       <div className='flex justify-between items-center gap-4 h-full w-full'>
         <div className='flex'>
           <img
@@ -32,7 +33,7 @@ export default function Header({ logoutUser }: HeaderProps) {
             alt='CashBook Logo'
             className='h-10 w-10 inline-block mr-2'
           />
-          <h1 className='text-2xl md:text-3xl font-bold text-gray-900'>
+          <h1 className='text-3xl font-semibold text-gray-900'>
             <Link to='/'>CashBook</Link>
           </h1>
         </div>
@@ -67,14 +68,23 @@ export default function Header({ logoutUser }: HeaderProps) {
             <div>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Avatar className='border border-neutral-800'>
-                    <AvatarFallback>CN</AvatarFallback>
+                  <Avatar className='border-2 border-neutral-500 cursor-pointer hover:border-neutral-800'>
+                    <AvatarFallback className='font-semibold text-neutral-500 hover:text-neutral-800'>
+                      {getUserInitials(userProfile)}
+                    </AvatarFallback>
                   </Avatar>
                 </PopoverTrigger>
                 <PopoverContent className='w-fit'>
-                  <div className='p-3 flex flex-col gap-5 justify-center items-center'>
+                  <div className='p-3 flex flex-col gap-1 justify-center items-center'>
+                    <CircleUserRound className='w-15 h-15' />
                     <span className='text-xl font-medium text-neutral-900'>{`${userProfile.firstName} ${userProfile.lastName}`}</span>
-                    <Button variant='secondary' onClick={logoutUser}>
+                    <p className='text-md'>{userProfile.email}</p>
+                    <Button
+                      variant='secondary'
+                      size='sm'
+                      className='cursor-pointer hover:bg-gray-200 mt-3'
+                      onClick={logoutUser}
+                    >
                       Logout
                     </Button>
                   </div>

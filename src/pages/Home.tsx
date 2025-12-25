@@ -2,6 +2,7 @@ import { FeatureCard } from '@/components/content/FeatureCard';
 import { HeroSection } from '@/components/content/HeroSection';
 import { useAuthStore } from '@/store/authStore';
 import { BookOpen, ClipboardList, PieChart } from 'lucide-react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
@@ -10,9 +11,12 @@ export default function Home() {
     return state.userId;
   });
 
-  if (userId) {
-    navigate('/dashboard');
-  }
+  useEffect(() => {
+    if (userId) {
+      navigate('/dashboard');
+    }
+  }, [userId, navigate]);
+
   return (
     <div className='pb-10'>
       <div className='header-margin'>

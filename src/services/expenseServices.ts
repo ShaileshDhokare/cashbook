@@ -107,6 +107,7 @@ export function useExpensesByBook(
   userId: string,
   filters: ExpenseFilters = {}
 ) {
+  console.log('🚀 ~ :110 ~ useExpensesByBook ~ filters:', filters);
   return useQuery({
     queryKey: EXPENSE_KEYS.byBook(bookId, userId, filters),
 
