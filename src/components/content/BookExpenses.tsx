@@ -11,7 +11,7 @@ import Expense from './Expense';
 import type { ExpenseWithDetails } from '@/services/expenseServices';
 import Loader from './Loader';
 import { ScrollArea } from '../ui/scroll-area';
-import { getFormattedDate, groupExpensesByDate } from '@/utils/commonUtils';
+import { groupExpensesByDate } from '@/utils/commonUtils';
 import { format } from 'date-fns';
 
 type BookExpensesProps = {
