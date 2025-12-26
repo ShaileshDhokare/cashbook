@@ -89,10 +89,10 @@ const BookDetail = () => {
       condition: amountQuery.condition,
       amount: useDebounce(amountQuery.amount, 1500),
     },
-    page: useDebounce(currentPage, 1000),
+    page: useDebounce(currentPage, 500),
   };
 
-  const { data: books } = useBooks(userId);
+  const { data: books, isLoading: booksLoading } = useBooks(userId);
   const currentBook = books?.find((book: any) => book.id === Number(bookId));
 
   const { data: BookExpenseData, isLoading: BookExpensesLoading } =
@@ -129,8 +129,16 @@ const BookDetail = () => {
     <div className='header-margin pb-5'>
       <div className='container mx-auto h-min-screen'>
         <div className='my-2 bg-blue-100 text-blue-800 rounded-xs p-2 text-center'>
-          <h1 className='text-2xl font-semibold mb-1'>{currentBook?.name}</h1>
-          <span className='text-sm'>{currentBook?.description}</span>
+          {booksLoading ? (
+            <Loader show={booksLoading} />
+          ) : (
+            <>
+              <h1 className='text-2xl font-semibold mb-1'>
+                {currentBook?.name}
+              </h1>
+              <span className='text-sm'>{currentBook?.description}</span>
+            </>
+          )}
         </div>
         <div className='mx-2'>
           <div className='bg-white p-2 rounded border'>
@@ -309,15 +317,18 @@ const BookDetail = () => {
             />
           </div>
         </div>
-        <div className='mt-4 px-2'>
-          <AnalysisChart
-            data={monthlyBookExpensesSummaryByCategory}
-            isLoading={monthlyBookExpensesSummaryByCategoryLoading}
-            chartTitle='Monthly Expenses By Category'
-            chartDescription='Monthly Expenses By Category in last 12 months'
-            dataKey='category_name'
-          />
-        </div>
+        {monthlyBookExpensesSummaryByCategory &&
+          monthlyBookExpensesSummaryByCategory.length > 0 && (
+            <div className='mt-4 px-2'>
+              <AnalysisChart
+                data={monthlyBookExpensesSummaryByCategory}
+                isLoading={monthlyBookExpensesSummaryByCategoryLoading}
+                chartTitle='Monthly Expenses By Category'
+                chartDescription='Monthly Expenses By Category in last 12 months'
+                dataKey='category_name'
+              />
+            </div>
+          )}
       </div>
     </div>
   );

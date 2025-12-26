@@ -11,11 +11,11 @@ export type UpdateCategoryInput = {
 };
 
 export const CATEGORY_KEYS = {
-  byBookId: (bookId: number) => ['categories', bookId] as const,
+  byBookId: (bookId: number | undefined) => ['categories', bookId] as const,
 };
 
 // 1. LIST ALL CATEGORIES
-export function useCategories(user_id: string, book_id: number) {
+export function useCategories(user_id: string, book_id: number | undefined) {
   return useQuery({
     queryKey: CATEGORY_KEYS.byBookId(book_id),
     queryFn: async () => {
@@ -29,6 +29,7 @@ export function useCategories(user_id: string, book_id: number) {
       if (error) throw error;
       return data as Category[];
     },
+    enabled: !!user_id && !!book_id,
   });
 }
 
@@ -48,7 +49,9 @@ export function useAddCategory(book_id: number) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.byBookId(book_id) });
+      queryClient.invalidateQueries({
+        queryKey: CATEGORY_KEYS.byBookId(book_id),
+      });
     },
   });
 }
@@ -74,7 +77,9 @@ export function useUpdateCategory(book_id: number) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.byBookId(book_id) });
+      queryClient.invalidateQueries({
+        queryKey: CATEGORY_KEYS.byBookId(book_id),
+      });
     },
   });
 }

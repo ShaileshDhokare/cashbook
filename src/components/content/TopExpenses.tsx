@@ -32,7 +32,6 @@ const TopExpenses = () => {
                   key={expense.id}
                   expense={expense}
                   showActions={false}
-                  displayDate='date'
                 />
               ))
             )}

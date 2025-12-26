@@ -19,15 +19,17 @@ const Dashboard = () => {
             <Books />
             <TopExpenses />
           </div>
-          <div className='mt-4 px-4'>
-            <AnalysisChart
-              data={expenseSummaryOfBooks}
-              isLoading={isLoading}
-              dataKey='book_name'
-              chartTitle='Monthly Expenses By Books'
-              chartDescription='Monthly expenses by books in last 12 months'
-            />
-          </div>
+          {expenseSummaryOfBooks && expenseSummaryOfBooks.length > 0 && (
+            <div className='mt-4 px-4'>
+              <AnalysisChart
+                data={expenseSummaryOfBooks}
+                isLoading={isLoading}
+                dataKey='book_name'
+                chartTitle='Monthly Expenses By Books'
+                chartDescription='Monthly expenses by books in last 12 months'
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

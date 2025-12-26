@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useUserRegister } from '@/services/authServices';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from 'sonner';
 
 const registerSchema = z
   .object({
@@ -77,6 +78,10 @@ export default function Register() {
   const onSubmit = async (data: RegisterFormData) => {
     userRegister(data, {
       onSuccess: (data) => {
+        toast.success('Registration successful!', {
+          duration: 4000,
+          description: 'Please check the email to verify your account.',
+        });
         setSession(data?.session);
         navigate('/');
       },

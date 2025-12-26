@@ -108,6 +108,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addCategoryError, setAddCategoryError] = useState('');
   const [open, setOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
 
   const {
     register,
@@ -227,7 +228,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
                     control={control}
                     name='date'
                     render={({ field }) => (
-                      <Popover>
+                      <Popover open={dateOpen} onOpenChange={setDateOpen}>
                         <PopoverTrigger asChild>
                           <Button
                             variant='outline'
@@ -249,7 +250,10 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
                           <Calendar
                             mode='single'
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(event) => {
+                              field.onChange(event);
+                              setDateOpen(false);
+                            }}
                             disabled={(date) =>
                               date > new Date() || date < new Date('1900-01-01')
                             }
@@ -334,7 +338,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
                           <PopoverContent className='w-[200px] p-0 max-h-[200px] overflow-y-auto'>
                             <Command>
                               <CommandInput placeholder='Search category...' />
-                              <CommandList>
+                              <CommandList className='h-36 overflow-auto'>
                                 <CommandEmpty>No category found.</CommandEmpty>
                                 <CommandGroup>
                                   {categories
@@ -473,7 +477,7 @@ const ExpenseForm = ({ isEdit = false, expense }: ExpenseFormProps) => {
                   {isEdit ? 'Update' : 'Add'}
                 </Button>
               </div>
-            </form>{' '}
+            </form>
           </>
         )}
         {manageCategory && (
