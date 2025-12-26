@@ -10,6 +10,7 @@ import { Spinner } from './components/ui/spinner';
 import { Toaster } from './components/ui/sonner';
 import { Button } from './components/ui/button';
 import { SquarePlus } from 'lucide-react';
+import { useBookStore } from './store/bookStore';
 
 const BookDetail = lazy(() => import('./pages/BookDetail'));
 const BooksList = lazy(() => import('./pages/BooksList'));
@@ -23,6 +24,8 @@ const NewExpense = lazy(() => import('./pages/NewExpense'));
 function App() {
   const setSession = useAuthStore((state: any) => state.setSession);
   const setError = useAuthStore((state: any) => state.setError);
+  const userId = useAuthStore((state: any) => state.userId);
+  const showNewExpense = useBookStore((state: any) => state.showNewExpense);
 
   const [isLoadingSession, setIsLoadingSession] = useState(true);
 
@@ -90,13 +93,18 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
-      <div className='fixed right-8 bottom-8 z-1000'>
-        <Link to='/new-expense'>
-          <Button className='rounded-full flex items-center gap-2 shadow-lg'>
-            <SquarePlus /> New Expense
-          </Button>
-        </Link>
-      </div>
+      {userId && showNewExpense && (
+        <div className='fixed right-8 bottom-8 z-1000'>
+          <Link to='/new-expense'>
+            <Button
+              size='lg'
+              className='rounded-full flex items-center gap-2 shadow-lg'
+            >
+              <SquarePlus /> New Expense
+            </Button>
+          </Link>
+        </div>
+      )}
       <Footer />
     </>
   );

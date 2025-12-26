@@ -60,7 +60,7 @@ const Expense = ({ expense, showActions = true }: ExpenseProps) => {
             </span>
             {showActions && (
               <>
-                <ExpenseForm isEdit expense={expense} />
+                <ExpenseForm expense={expense} />
                 <AlertDialog
                   open={deleteDialogOpen}
                   onOpenChange={setDeleteDialogOpen}
@@ -82,7 +82,10 @@ const Expense = ({ expense, showActions = true }: ExpenseProps) => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteExpense}>
+                      <AlertDialogAction
+                        onClick={handleDeleteExpense}
+                        className='bg-red-600 hover:bg-red-700'
+                      >
                         {deleteExpensePending && <Spinner className='mr-2' />}
                         Delete
                       </AlertDialogAction>

@@ -3,7 +3,6 @@ import { Equal, Sigma, X } from 'lucide-react';
 
 import BookExpenses from '@/components/content/BookExpenses';
 import DurationSelector from '@/components/content/DurationSelector';
-import ExpenseForm from '@/components/content/ExpenseForm';
 import Loader from '@/components/content/Loader';
 import {
   InputGroup,
@@ -36,9 +35,10 @@ import { useAuthStore } from '@/store/authStore';
 import { getExpensesByDuration, getRupeeSymbol } from '@/utils/commonUtils';
 import type { DateRange, DurationTypes } from '@/utils/types';
 import useDebounce from '@/utils/useDebounce';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AnalysisChart from '@/components/content/AnalysisChart';
+import { useBookStore } from '@/store/bookStore';
 
 const BookDetail = () => {
   const [selectedDuration, setSelectedDuration] =
@@ -68,6 +68,12 @@ const BookDetail = () => {
   const userId = useAuthStore((state: any) => {
     return state.userId;
   });
+
+  const setActiveBookId = useBookStore((state: any) => state.setActiveBookId);
+
+  useEffect(() => {
+    setActiveBookId(Number(bookId));
+  }, []);
 
   const { data: bookCategories } = useCategories(userId, Number(bookId));
   const { data: paymentModes } = usePaymentModes(userId);
@@ -251,13 +257,7 @@ const BookDetail = () => {
                       />
                     </InputGroup>
                   </div>
-                  <ExpenseForm />
                 </div>
-              </div>
-            )}
-            {!showFilters && (
-              <div className='flex justify-end mb-3'>
-                <ExpenseForm />
               </div>
             )}
             <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
