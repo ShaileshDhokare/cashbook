@@ -98,6 +98,17 @@ const BookDetail = () => {
     page: useDebounce(currentPage, 500),
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedDuration,
+    customDuration,
+    selectedCategories,
+    selectedPaymentModes,
+    searchQuery,
+    amountQuery,
+  ]);
+
   const { data: books, isLoading: booksLoading } = useBooks(userId);
   const currentBook = books?.find((book: any) => book.id === Number(bookId));
 
@@ -130,6 +141,10 @@ const BookDetail = () => {
       amount: 0,
     });
   };
+
+  useEffect(() => {
+    if (!showFilters) clearAllFilters();
+  }, [showFilters]);
 
   return (
     <div className='header-margin pb-5'>
@@ -167,15 +182,17 @@ const BookDetail = () => {
                     setCustomDuration={setCustomDuration}
                   />
                 )}
-                <div className='grid grid-cols-1 md:grid-cols-12 lg:grid-cols-15 gap-4 mb-4'>
+                <div className='flex flex-wrap gap-4 mb-4'>
                   {selectedDuration !== 'custom_range' && (
                     <DurationSelector
                       selectedDuration={selectedDuration}
                       setSelectedDuration={setSelectedDuration}
                     />
                   )}
-                  <div className='col-span-5 lg:col-span-3 flex gap-0 items-center w-fit bg-purple-100 text-purple-800 px-2 rounded-xs max-w-[280px]'>
-                    <span className='text-base font-medium'>Category:</span>
+                  <div className='flex justify-between items-center bg-purple-100 text-purple-800 pl-2 w-72'>
+                    <span className='text-base font-medium w-24'>
+                      Category:
+                    </span>
                     <MultiSelect
                       options={bookCategories?.map((category) => ({
                         value: category.id.toString(),
@@ -186,8 +203,10 @@ const BookDetail = () => {
                       placeholder='Choose categories...'
                     />
                   </div>
-                  <div className='col-span-5 lg:col-span-3 flex gap-0 items-center w-fit bg-indigo-100 text-indigo-800 px-2 rounded-xs max-w-[280px]'>
-                    <span className='text-base font-medium'>Pay Mode:</span>
+                  <div className='flex justify-between items-center bg-indigo-100 text-indigo-800 pl-2 w-72'>
+                    <span className='text-base font-medium w-30'>
+                      Pay Mode:
+                    </span>
                     <MultiSelect
                       options={paymentModes?.map((mode) => ({
                         value: mode.id.toString(),
@@ -203,7 +222,7 @@ const BookDetail = () => {
                   <div className='col-span-2 lg:col-span-1'>
                     <Button
                       variant='ghost'
-                      className='rounded-xs gap-0.5 bg-red-100 hover:bg-red-200 text-red-800 hover:text-red-900 max-w-[120px]'
+                      className='cursor-pointer gap-1 bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-900 w-20'
                       onClick={clearAllFilters}
                     >
                       <X />

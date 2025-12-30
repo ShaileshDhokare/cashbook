@@ -64,10 +64,7 @@ const MultiSelect = ({
     });
 
   return (
-    <div
-      className='relative min-w-[180px] max-w-[250px] text-zinc-900'
-      ref={dropdownRef}
-    >
+    <div className='relative w-full text-zinc-900' ref={dropdownRef}>
       <div
         className={`flex min-h-9 w-full items-center justify-between rounded-md bg-transparent px-2 py-1 text-sm cursor-pointer`}
         onClick={() => setIsOpen(!isOpen)}

@@ -77,7 +77,7 @@ const BookExpenses = ({
           <div className='flex items-center justify-center gap-2 text-sm font-medium'>
             <span>Page</span>
             <Select
-              defaultValue={`${currentPage}`}
+              value={currentPage.toString()}
               onValueChange={(value) => {
                 setCurrentPage && setCurrentPage(Number(value));
               }}
@@ -88,7 +88,7 @@ const BookExpenses = ({
               <SelectContent side='top'>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (page) => (
-                    <SelectItem key={page} value={`${page}`}>
+                    <SelectItem key={page} value={page.toString()}>
                       {page}
                     </SelectItem>
                   )

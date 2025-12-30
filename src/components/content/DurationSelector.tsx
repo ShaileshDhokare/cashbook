@@ -42,8 +42,8 @@ const DurationSelector = ({
   if (selectedDuration === 'custom_range') {
     return (
       <div className='flex gap-4 mb-4'>
-        <div className='flex flex-col md:flex-row gap-0 bg-slate-100 text-slate-800 px-2 rounded-xs'>
-          <div className='flex gap-0 items-center'>
+        <div className='flex flex-wrap gap-0 rounded-xs w-fit'>
+          <div className='flex gap-2 items-center justify-between bg-slate-100 text-slate-800 px-2 w-68'>
             <span className='text-base font-medium'>Duration:</span>
             <Select
               defaultValue='this_month'
@@ -52,7 +52,7 @@ const DurationSelector = ({
               }
               value={selectedDuration}
             >
-              <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
+              <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0 w-full'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -67,7 +67,7 @@ const DurationSelector = ({
               </SelectContent>
             </Select>
           </div>
-          <div className='flex gap-0 items-center'>
+          <div className='flex gap-0 items-center justify-between bg-slate-100 text-slate-800 px-2 w-68'>
             <span className='text-base font-medium mx-2'>From:</span>
             <Popover open={fromDateOpen} onOpenChange={setFromDateOpen}>
               <PopoverTrigger
@@ -75,9 +75,9 @@ const DurationSelector = ({
                 className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
               >
                 <Button
-                  variant='outline'
+                  variant='ghost'
                   id='date'
-                  className='justify-between font-normal'
+                  className='justify-between font-normal w-50'
                 >
                   {fromDate ? fromDate.toLocaleDateString() : 'Select date'}
                   <CalendarDays />
@@ -99,7 +99,7 @@ const DurationSelector = ({
               </PopoverContent>
             </Popover>
           </div>
-          <div className='flex gap-0 items-center'>
+          <div className='flex gap-0 items-center justify-between bg-slate-100 text-slate-800 px-2 w-68'>
             <span className='text-base font-medium mx-2'>To:</span>
             <Popover open={toDateOpen} onOpenChange={setToDateOpen}>
               <PopoverTrigger
@@ -107,9 +107,9 @@ const DurationSelector = ({
                 className='border-0 bg-transparent hover:bg-transparent text-base font-normal px-1 has-[>svg]:px-1'
               >
                 <Button
-                  variant='outline'
+                  variant='ghost'
                   id='date'
-                  className='justify-between font-normal'
+                  className='justify-between font-normal w-54'
                 >
                   {toDate ? toDate.toLocaleDateString() : 'Select date'}
                   <CalendarDays />
@@ -136,14 +136,14 @@ const DurationSelector = ({
     );
   }
   return (
-    <div className='col-span-4 lg:col-span-2 flex gap-0 items-center bg-slate-100 text-slate-800 px-2 rounded-xs max-w-[200px]'>
-      <span className='text-base font-medium'>Duration:</span>
+    <div className='flex justify-between items-center bg-slate-100 text-slate-800 pl-2 rounded-xs w-72'>
+      <span className='text-base font-medium w-24'>Duration:</span>
       <Select
         defaultValue='this_month'
         onValueChange={(value: DurationTypes) => setSelectedDuration(value)}
         value={selectedDuration}
       >
-        <SelectTrigger className='border-0 shadow-none px-1 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0'>
+        <SelectTrigger className='border-0 shadow-none px-2 gap-0.5 text-base focus-visible:border-0 focus-visible:ring-0 w-full'>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
