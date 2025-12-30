@@ -235,6 +235,7 @@ const BookDetail = () => {
                     <InputGroup className='rounded-xs max-w-[150px] md:max-w-full'>
                       <InputGroupInput
                         placeholder='Search by remark...'
+                        value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                       />
                     </InputGroup>
@@ -267,6 +268,7 @@ const BookDetail = () => {
                       <InputGroupInput
                         type='number'
                         placeholder='Enter search query'
+                        value={amountQuery.amount}
                         onChange={(e) =>
                           setAmountQuery({
                             ...amountQuery,
