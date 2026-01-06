@@ -171,7 +171,7 @@ const ExpenseForm = ({ expense }: ExpenseFormProps) => {
                         )}
                       >
                         {field.value ? (
-                          field.value.toLocaleDateString()
+                          format(field.value, 'E, dd MMM yyyy')
                         ) : (
                           <span>Select date</span>
                         )}
@@ -182,6 +182,7 @@ const ExpenseForm = ({ expense }: ExpenseFormProps) => {
                       <Calendar
                         mode='single'
                         selected={field.value}
+                        captionLayout='dropdown'
                         onSelect={(event) => {
                           field.onChange(event);
                           setDateOpen(false);
@@ -189,7 +190,6 @@ const ExpenseForm = ({ expense }: ExpenseFormProps) => {
                         disabled={(date) =>
                           date > new Date() || date < new Date('1900-01-01')
                         }
-                        initialFocus
                       />
                     </PopoverContent>
                   </Popover>

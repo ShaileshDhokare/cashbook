@@ -13,6 +13,7 @@ import { Button } from '../ui/button';
 import { Calendar } from '../ui/calendar';
 import { CalendarDays } from 'lucide-react';
 import type { DurationTypes } from '@/utils/types';
+import { format } from 'date-fns';
 
 type DurationSelectorProps = {
   selectedDuration: DurationTypes;
@@ -79,7 +80,9 @@ const DurationSelector = ({
                   id='date'
                   className='justify-between font-normal w-50'
                 >
-                  {fromDate ? fromDate.toLocaleDateString() : 'Select date'}
+                  {fromDate
+                    ? format(fromDate, 'E, dd MMM yyyy')
+                    : 'Select date'}
                   <CalendarDays />
                 </Button>
               </PopoverTrigger>
@@ -111,7 +114,7 @@ const DurationSelector = ({
                   id='date'
                   className='justify-between font-normal w-54'
                 >
-                  {toDate ? toDate.toLocaleDateString() : 'Select date'}
+                  {toDate ? format(toDate, 'E, dd MMM yyyy') : 'Select date'}
                   <CalendarDays />
                 </Button>
               </PopoverTrigger>

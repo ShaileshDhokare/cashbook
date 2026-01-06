@@ -245,7 +245,7 @@ const NewExpense = () => {
                                 className='w-64 justify-between font-normal'
                               >
                                 {field.value ? (
-                                  field.value.toLocaleDateString()
+                                  format(field.value, 'E, dd MMM yyyy')
                                 ) : (
                                   <span>Select date</span>
                                 )}
@@ -259,6 +259,7 @@ const NewExpense = () => {
                               <Calendar
                                 mode='single'
                                 selected={field.value}
+                                captionLayout='dropdown'
                                 onSelect={(event) => {
                                   field.onChange(event);
                                   setDateOpen(false);

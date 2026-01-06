@@ -136,7 +136,7 @@ const BookExpenses = ({
                   ({ date, expenses }) => (
                     <div className='flex flex-col gap-3' key={date}>
                       <div className='text-base font-semibold text-neutral-600 w-full flex justify-center items-center my-1'>
-                        {format(date, 'dd MMMM yyyy')}
+                        {format(date, 'EEEE, dd MMMM yyyy')}
                       </div>
                       {expenses?.map((expense) => (
                         <Expense
