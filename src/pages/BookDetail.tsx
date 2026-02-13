@@ -58,7 +58,7 @@ const BookDetail = () => {
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
-    []
+    [],
   );
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -80,7 +80,7 @@ const BookDetail = () => {
 
   const { startDate, endDate } = getExpensesByDuration(
     selectedDuration,
-    customDuration
+    customDuration,
   ) as DateRange;
 
   const filters = {
@@ -88,7 +88,7 @@ const BookDetail = () => {
     endDate,
     categoryIds: useDebounce(selectedCategories, 1500).map((id) => Number(id)),
     paymentModeIds: useDebounce(selectedPaymentModes, 1500).map((id) =>
-      Number(id)
+      Number(id),
     ),
     searchQuery: useDebounce(searchQuery, 1500),
     amountQuery: {
@@ -154,7 +154,7 @@ const BookDetail = () => {
             <Loader show={booksLoading} />
           ) : (
             <>
-              <h1 className='text-2xl font-semibold mb-1'>
+              <h1 className='text-lg md:text-2xl font-semibold mb-1'>
                 {currentBook?.name}
               </h1>
               <span className='text-sm'>{currentBook?.description}</span>
@@ -281,15 +281,15 @@ const BookDetail = () => {
                 </div>
               </div>
             )}
-            <div className='grid grid-cols-9 border rounded-sm p-3 mb-4'>
-              <div className='col-span-4 flex gap-2 items-center justify-center'>
+            <div className='grid grid-cols-11 border rounded-sm p-3 mb-4'>
+              <div className='col-span-5 flex gap-2 items-center justify-center'>
                 <div className='flex flex-col align-top h-full'>
                   <span className='p-2 mt-1 rounded-full border bg-indigo-100 text-indigo-900'>
-                    <Sigma className='w-[25px] h-[25px]' />
+                    <Sigma className='w-6 md:w-10 h-6 md:h-10' />
                   </span>
                 </div>
                 <div className='flex flex-col'>
-                  <span className='font-medium text-base'>
+                  <span className='font-normal md:font-medium text-base'>
                     {selectedDuration === 'this_month'
                       ? 'This Month'
                       : 'Selected Period'}
@@ -297,7 +297,7 @@ const BookDetail = () => {
                   {totalExpensesOfDurationLoading ? (
                     <Loader show={totalExpensesOfDurationLoading} />
                   ) : (
-                    <h1 className='text-2xl md:text-4xl font-medium'>
+                    <h1 className='text-lg md:text-4xl font-normal md:font-medium'>
                       {getRupeeSymbol()}
                       {(totalExpensesOfDuration &&
                         totalExpensesOfDuration[0]?.sum) ||
@@ -309,18 +309,20 @@ const BookDetail = () => {
               <div className='col-span-1 flex justify-center'>
                 <Separator orientation='vertical' />
               </div>
-              <div className='col-span-4 flex gap-2 items-center justify-center'>
+              <div className='col-span-5 flex gap-2 items-center justify-center'>
                 <div className='flex flex-col align-top h-full'>
                   <span className='p-2 mt-1 rounded-full border bg-green-100 text-green-900'>
-                    <Equal className='w-[25px] h-[25px]' />
+                    <Equal className='w-6 md:w-10 h-6 md:h-10' />
                   </span>
                 </div>
                 <div className='flex flex-col'>
-                  <span className='font-medium text-base'>All Time</span>
+                  <span className='font-normal md:font-medium text-base'>
+                    All Time
+                  </span>
                   {totalExpensesOfAllTimeLoading ? (
                     <Loader show={totalExpensesOfAllTimeLoading} />
                   ) : (
-                    <h1 className='text-2xl md:text-4xl font-medium'>
+                    <h1 className='text-lg md:text-4xl font-normal md:font-medium'>
                       {getRupeeSymbol()}{' '}
                       {(totalExpensesOfAllTime &&
                         totalExpensesOfAllTime[0]?.sum) ||

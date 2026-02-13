@@ -28,7 +28,7 @@ const Books = () => {
   return (
     <Card className='h-fit'>
       <CardHeader>
-        <CardTitle className='text-xl'>Books</CardTitle>
+        <CardTitle className='text-base md:text-xl'>Books</CardTitle>
       </CardHeader>
       <CardContent className='px-4'>
         <div className='flex w-full flex-col gap-4'>
@@ -43,16 +43,16 @@ const Books = () => {
                 </div>
                 <ItemDescription>{book.description}</ItemDescription>
                 <div className='w-full mt-4 flex flex-row gap-4 justify-between items-center'>
-                  <h1 className='text-2xl font-bold'>
+                  <h1 className='text-2xl font-normal md:font-medium'>
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.all_time)}
                   </h1>
-                  <p className='text-base font-semibold'>
+                  <p className='text-base font-normal md:font-medium'>
                     <span className='text-gray-500'>This Month:</span>{' '}
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.this_month)}
                   </p>
-                  <p className='text-base font-semibold'>
+                  <p className='text-base font-normal md:font-medium'>
                     <span className='text-gray-500'>This Year:</span>{' '}
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.this_year)}

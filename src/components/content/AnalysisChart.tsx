@@ -74,7 +74,10 @@ export default function AnalysisChart({
                 fontSize={12}
               />
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
+              <ChartLegend
+                className='w-[80%] flex-wrap'
+                content={<ChartLegendContent />}
+              />
               {Object.entries(chartConfig).map(([key, value], index) => {
                 if (index === Object.keys(chartConfig).length - 1) {
                   return (

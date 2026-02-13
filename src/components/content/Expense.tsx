@@ -50,11 +50,11 @@ const Expense = ({ expense, showActions = true }: ExpenseProps) => {
     <Item variant='outline' className='p-2 bg-white shadow-sm'>
       <ItemContent className='flex flex-col gap-3'>
         <div className='flex items-center justify-between'>
-          <div className='text-base font-semibold md:font-medium '>
+          <div className='text-base font-normal md:font-medium '>
             <span>{remark}</span>
           </div>
           <div className='flex items-center gap-4'>
-            <span className='text-lg font-semibold md:font-medium mr-2 '>
+            <span className='text-base md:text-lg font-normal md:font-medium mr-2 '>
               {getRupeeSymbol()}
               {amount}
             </span>
@@ -97,13 +97,13 @@ const Expense = ({ expense, showActions = true }: ExpenseProps) => {
           </div>
         </div>
         <div className='flex gap-2 w-full'>
-          <span className='px-1 font-medium border rounded-sm bg-purple-100 text-purple-800'>
+          <span className='px-1 font-normal md:font-medium border rounded-sm bg-purple-100 text-purple-800'>
             {categories?.name}
           </span>
-          <span className='px-1 font-medium border rounded-sm bg-indigo-100 text-indigo-800'>
+          <span className='px-1 font-normal md:font-medium border rounded-sm bg-indigo-100 text-indigo-800'>
             {payment_modes?.name}
           </span>
-          <span className='px-1 font-medium border rounded-sm bg-slate-100 text-slate-800'>
+          <span className='px-1 font-normal md:font-medium border rounded-sm bg-slate-100 text-slate-800'>
             {getFormattedDate(date)}
           </span>
         </div>

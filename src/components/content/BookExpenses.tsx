@@ -91,7 +91,7 @@ const BookExpenses = ({
                     <SelectItem key={page} value={page.toString()}>
                       {page}
                     </SelectItem>
-                  )
+                  ),
                 )}
               </SelectContent>
             </Select>
@@ -135,7 +135,7 @@ const BookExpenses = ({
                 groupExpensesByDate(expenses || []).map(
                   ({ date, expenses }) => (
                     <div className='flex flex-col gap-3' key={date}>
-                      <div className='text-base font-semibold text-neutral-600 w-full flex justify-center items-center my-1'>
+                      <div className='text-base font-normal md:font-medium text-neutral-600 w-full flex justify-center items-center my-1'>
                         {format(date, 'EEEE, dd MMMM yyyy')}
                       </div>
                       {expenses?.map((expense) => (
@@ -146,7 +146,7 @@ const BookExpenses = ({
                         />
                       ))}
                     </div>
-                  )
+                  ),
                 )
               )}
             </div>

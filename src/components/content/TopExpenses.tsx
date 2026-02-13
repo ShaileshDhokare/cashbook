@@ -17,7 +17,7 @@ const TopExpenses = () => {
   return (
     <Card className='h-fit'>
       <CardHeader>
-        <CardTitle className='text-xl'>
+        <CardTitle className='text-base md:text-xl'>
           Top Expenses in {format(new Date(), 'MMMM yyyy')}
         </CardTitle>
       </CardHeader>
