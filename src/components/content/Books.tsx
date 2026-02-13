@@ -43,17 +43,17 @@ const Books = () => {
                 </div>
                 <ItemDescription>{book.description}</ItemDescription>
                 <div className='w-full mt-4 flex flex-row gap-4 justify-between items-center'>
-                  <h1 className='text-2xl font-normal md:font-medium'>
+                  <h1 className='text-lg md:text-2xl font-normal md:font-medium'>
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.all_time)}
                   </h1>
                   <p className='text-base font-normal md:font-medium'>
-                    <span className='text-gray-500'>This Month:</span>{' '}
+                    <span className='text-gray-500 text-xs'>This Month:</span>{' '}
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.this_month)}
                   </p>
                   <p className='text-base font-normal md:font-medium'>
-                    <span className='text-gray-500'>This Year:</span>{' '}
+                    <span className='text-gray-500 text-xs'>This Year:</span>{' '}
                     {getRupeeSymbol()}
                     {new Intl.NumberFormat('en-IN').format(book.this_year)}
                   </p>
